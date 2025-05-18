@@ -5,12 +5,6 @@ class Cloud extends MoveableObject {
         this.y = 0;
         this.width = 700;
         this.height = 300;
-        this.animate();
-    }
-
-    animate() {
-        setInterval(() => {
-            this.x -= 0.15;
-        }, 1000 / 60);
+        this.moveLeft();
     }
 }

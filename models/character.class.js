@@ -30,7 +30,6 @@ class Character extends MoveableObject {
         `own.img/character/idle/idle_frame_8.png`,
         `own.img/character/idle/idle_frame_9.png`,
     ];
-    currentImage = 0;
 
     constructor() {
         super().loadImage(`own.img/character/idle/idle_frame_1.png`);

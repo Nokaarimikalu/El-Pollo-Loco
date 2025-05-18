@@ -1,6 +1,6 @@
 class World {
     character = new Character();
-    enemies = [new Chicken(), new Chicken(), new Chicken(), new Chicken(), new Chicken()];
+    enemies = [new GreyRat(), new GreyRat(), new BrownRat(), new WhiteRat(), new WhiteRat()];
     lights = [new Cloud()];
     canvas;
     ctx;
