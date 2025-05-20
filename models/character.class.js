@@ -3,6 +3,8 @@ class Character extends MoveableObject {
     y = 180;
     height = 250;
     width = 250;
+    speed = 1.5;
+    world;
 
     IMAGES_WAlKING = [
         `own.img/character/walking/walk_frame_1.png`,
@@ -33,17 +35,33 @@ class Character extends MoveableObject {
 
     constructor() {
         super().loadImage(`own.img/character/idle/idle_frame_1.png`);
-        this.loadImages(this.IMAGES_IDLE);
+        this.loadImages(this.IMAGES_WAlKING);
         this.animate();
     }
 
     animate() {
         setInterval(() => {
-            let i = this.currentImage % this.IMAGES_IDLE.length;
-            let path = this.IMAGES_IDLE[i];
-            this.img = this.ImageCache[path];
-            this.currentImage++;
-        }, 190);
+            // wie schnell er sich bewegen tut
+            if (this.world.keyboard.RIGHT) {
+                this.x += this.speed;
+                this.otherDirection = false;
+            }
+            if (this.world.keyboard.LEFT) {
+                this.x -= this.speed;
+                this.otherDirection = true;
+            }
+            this.world.camera_x = -this.x;
+        }, 1000 / 60);
+
+        setInterval(() => {
+            if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+                //Walk animation
+                let i = this.currentImage % this.IMAGES_WAlKING.length;
+                let path = this.IMAGES_WAlKING[i];
+                this.img = this.ImageCache[path];
+                this.currentImage++;
+            }
+        }, 80);
     }
 
     jump() {}
