@@ -1,4 +1,5 @@
 class MoveableObject {
+
     x = 100;
     y = 350;
     img;
@@ -22,6 +23,13 @@ class MoveableObject {
         });
     }
 
+    playAnimation(images){
+            let i = this.currentImage % images.length;
+            let path = images[i];
+            this.img = this.ImageCache[path];
+            this.currentImage++;
+    }
+
     moveRight() {
         console.log(`Moving right`);
     }
@@ -29,13 +37,6 @@ class MoveableObject {
         setInterval(() => {
             this.x -= this.speed;
         }, 1000 / 60);
-    }
-
-    playAnimation(images){
-            let i = this.currentImage % images.length;
-            let path = images[i];
-            this.img = this.ImageCache[path];
-            this.currentImage++;
     }
 }
 

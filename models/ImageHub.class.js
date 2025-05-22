@@ -1,8 +1,4 @@
 class ImageHub {
-    static editables = {
-
-    }
-
     static mainCharacter = {
         idle: [
             "img/2_character_pepe/1_idle/idle/I-1.png",
@@ -68,74 +64,100 @@ class ImageHub {
     };
 
     static chicken_normal = {
-      walk: [
-        "img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
-        "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
-        "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
-      ],
+        walk: [
+            "img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
+            "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
+            "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
+        ],
 
-      dead: [
-        "img/3_enemies_chicken/chicken_normal/2_dead/dead.png",
-      ]
+        dead: [
+            "img/3_enemies_chicken/chicken_normal/2_dead/dead.png",
+        ],
     };
 
     static chicken_small = {
-    walk:[
-      "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
-      "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
-      "img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
-    ],
+        walk:[
+            "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
+            "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
+            "img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
+        ],
 
-    dead: [
-      "img/3_enemies_chicken/chicken_small/2_dead/dead.png",
-    ]
+        dead: [
+            "img/3_enemies_chicken/chicken_small/2_dead/dead.png",
+        ],
     }
 
     static chicken_boss = {
-      walk:[
-        "img/4_enemie_boss_chicken/1_walk/G1.png",
-        "img/4_enemie_boss_chicken/1_walk/G2.png",
-        "img/4_enemie_boss_chicken/1_walk/G3.png",
-        "img/4_enemie_boss_chicken/1_walk/G4.png",
-      ],
+        walk:[
+            "img/4_enemie_boss_chicken/1_walk/G1.png",
+            "img/4_enemie_boss_chicken/1_walk/G2.png",
+            "img/4_enemie_boss_chicken/1_walk/G3.png",
+            "img/4_enemie_boss_chicken/1_walk/G4.png",
+        ],
 
-      alert: [
-        "img/4_enemie_boss_chicken/2_alert/G5.png",
-        "img/4_enemie_boss_chicken/2_alert/G6.png",
-        "img/4_enemie_boss_chicken/2_alert/G7.png",
-        "img/4_enemie_boss_chicken/2_alert/G8.png",
-        "img/4_enemie_boss_chicken/2_alert/G9.png",
-        "img/4_enemie_boss_chicken/2_alert/G10.png",
-        "img/4_enemie_boss_chicken/2_alert/G11.png",
-        "img/4_enemie_boss_chicken/2_alert/G12.png",
-      ],
+        alert: [
+            "img/4_enemie_boss_chicken/2_alert/G5.png",
+            "img/4_enemie_boss_chicken/2_alert/G6.png",
+            "img/4_enemie_boss_chicken/2_alert/G7.png",
+            "img/4_enemie_boss_chicken/2_alert/G8.png",
+            "img/4_enemie_boss_chicken/2_alert/G9.png",
+            "img/4_enemie_boss_chicken/2_alert/G10.png",
+            "img/4_enemie_boss_chicken/2_alert/G11.png",
+            "img/4_enemie_boss_chicken/2_alert/G12.png",
+        ],
 
-      attack: [
-        "img/4_enemie_boss_chicken/3_attack/G13.png",
-        "img/4_enemie_boss_chicken/3_attack/G14.png",
-        "img/4_enemie_boss_chicken/3_attack/G15.png",
-        "img/4_enemie_boss_chicken/3_attack/G16.png",
-        "img/4_enemie_boss_chicken/3_attack/G17.png",
-        "img/4_enemie_boss_chicken/3_attack/G18.png",
-        "img/4_enemie_boss_chicken/3_attack/G19.png",
-        "img/4_enemie_boss_chicken/3_attack/G20.png",
-      ],
+        attack: [
+            "img/4_enemie_boss_chicken/3_attack/G13.png",
+            "img/4_enemie_boss_chicken/3_attack/G14.png",
+            "img/4_enemie_boss_chicken/3_attack/G15.png",
+            "img/4_enemie_boss_chicken/3_attack/G16.png",
+            "img/4_enemie_boss_chicken/3_attack/G17.png",
+            "img/4_enemie_boss_chicken/3_attack/G18.png",
+            "img/4_enemie_boss_chicken/3_attack/G19.png",
+            "img/4_enemie_boss_chicken/3_attack/G20.png",
+        ],
 
-      hurt: [
-        "img/4_enemie_boss_chicken/4_hurt/G21.png",
-        "img/4_enemie_boss_chicken/4_hurt/G22.png",
-        "img/4_enemie_boss_chicken/4_hurt/G23.png",
-      ],
+        hurt: [
+            "img/4_enemie_boss_chicken/4_hurt/G21.png",
+            "img/4_enemie_boss_chicken/4_hurt/G22.png",
+            "img/4_enemie_boss_chicken/4_hurt/G23.png",
+        ],
 
-      dead: [
-        "img/4_enemie_boss_chicken/5_dead/G24.png",
-        "img/4_enemie_boss_chicken/5_dead/G25.png",
-        "img/4_enemie_boss_chicken/5_dead/G26.png",
-      ]
+        dead: [
+            "img/4_enemie_boss_chicken/5_dead/G24.png",
+            "img/4_enemie_boss_chicken/5_dead/G25.png",
+            "img/4_enemie_boss_chicken/5_dead/G26.png",
+        ]
+    }
+
+    static salsa = {
+        on_ground: [
+            "img/6_salsa_bottle/1_salsa_bottle_on_ground.png",
+            "img/6_salsa_bottle/2_salsa_bottle_on_ground.png",
+        ],
+
+        spinning_salsa: [
+            "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
+            "img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png",
+            "img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png",
+            "img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png",
+        ],
+
+        salsa_splash: [
+            "img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png",
+            "img/6_salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png",
+            "img/6_salsa_bottle/bottle_rotation/bottle_splash/3_bottle_splash.png",
+            "img/6_salsa_bottle/bottle_rotation/bottle_splash/4_bottle_splash.png",
+            "img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png",
+            "img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
+        ],
     }
 
     static images_of_coins = [
-      "img/8_coin/coin_1.png",
-      "img/8_coin/coin_2.png",
+        "img/8_coin/coin_1.png",
+        "img/8_coin/coin_2.png",
     ]
+
+
+
 }

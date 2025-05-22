@@ -1,11 +1,11 @@
 class Character extends MoveableObject {
+
     x = 0;
     y = 180;
     height = 250;
     width = 150;
     speed = 2.5;
     world;
-
 
     constructor() {
         super();
@@ -17,16 +17,16 @@ class Character extends MoveableObject {
 
     animate() {
         setInterval(() => {
+            //Walk animation
             if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                //Walk animation
                 this.playAnimation(ImageHub.mainCharacter.walk)
             }
         }, 80);
     }
 
     leftAndRightAnimation(){
+        // wie schnell er sich bewegen tut
         setInterval(() => {
-            // wie schnell er sich bewegen tut
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.x += this.speed;
                 this.otherDirection = false;

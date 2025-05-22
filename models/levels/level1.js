@@ -32,8 +32,19 @@ const level1 = new Level(
         new BackgroundObject(`img/5_background/layers/2_second_layer/2.png`, 719*3),
         new BackgroundObject(`img/5_background/layers/1_first_layer/2.png`, 719*3),
     ],
-
-
-    [new Coin(100,100)]
-        
+    [
+        ...Coin.multipleCoins(200),
+        ...Coin.multipleCoins(900)
+    ],
+    [
+        new SalsaBottle(100),
+        new SalsaBottle(500),
+        new SalsaBottle(900),
+        new SalsaBottle(1100),
+        new SalsaBottle(1400),
+        new SalsaBottle(1700),
+        new SalsaBottle(2000),
+        new SalsaBottle(2400),
+    ]
+    
 );
