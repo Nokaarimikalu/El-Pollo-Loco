@@ -1,9 +1,9 @@
 class MoveableObject {
     x = 100;
-    y = 375;
+    y = 350;
     img;
-    width = 150;
-    height = 70;
+    width = 80;
+    height = 80;
     currentImage = 0;
     ImageCache = {};
     speed = 0.15;
@@ -30,4 +30,12 @@ class MoveableObject {
             this.x -= this.speed;
         }, 1000 / 60);
     }
+
+    playAnimation(images){
+            let i = this.currentImage % images.length;
+            let path = images[i];
+            this.img = this.ImageCache[path];
+            this.currentImage++;
+    }
 }
+
