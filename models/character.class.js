@@ -1,7 +1,7 @@
 class Character extends MoveableObject {
 
     x = 0;
-    y = 180;
+    y = 80;
     height = 250;
     width = 150;
     speed = 2.5;
@@ -11,17 +11,23 @@ class Character extends MoveableObject {
         super();
         this.loadImage(ImageHub.mainCharacter.idle[0]);
         this.loadImages(ImageHub.mainCharacter.walk);
+        this.loadImages(ImageHub.mainCharacter.jump);
+        this.applyGravity();
         this.animate();
         this.leftAndRightAnimation();
     }
 
-    animate() {
+    animate() {    
         setInterval(() => {
-            //Walk animation
-            if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                this.playAnimation(ImageHub.mainCharacter.walk)
-            }
-        }, 80);
+            if(this.isAboveGround()){
+                this.playAnimation(ImageHub.mainCharacter.jump)
+            } else {
+                //Walk animation
+                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+                    this.playAnimation(ImageHub.mainCharacter.walk)
+                }
+            }   
+        }, 1000/10);
     }
 
     leftAndRightAnimation(){
