@@ -1,24 +1,30 @@
 class World {
-    //#region attributes
     character = new Character();
     level = level1
     canvas;
     ctx;
     keyboard;
     camera_x = 0;
-    //#endregion
-    //#region methods
+
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext(`2d`);
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
+        Intervalhub.startInterval(this.checkCollision, 1000/1);
     }
 
     setWorld() {
         // damit der char weiss auf welche World er sich bezieht 
         this.character.world = this;
+    }
+
+    checkCollision = () => {
+            this.level.enemies.forEach((enemy) => {
+                if(this.character.isColliding(enemy)){
+                    console.log("Collision detected!", enemy);
+                } } )
     }
 
     draw() {
@@ -52,16 +58,27 @@ class World {
     // fuer dem Character das wenn er nach link geht das sich die Bilder Spiegeln
     addToMap(mo) {
         if (mo.otherDirection) {
+        this.flipImage(mo);
+        }
+
+        mo.draw(this.ctx);
+        mo.drawFrame(this.ctx);
+        mo.drawFrameoffset(this.ctx)
+
+        if (mo.otherDirection) {
+            this.flipImageBack(mo);
+        }
+    }
+
+    flipImage(mo){
             this.ctx.save();
             this.ctx.translate(mo.width, 0);
             this.ctx.scale(-1, 1);
             mo.x = mo.x * -1;
-        }
-        this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
-        if (mo.otherDirection) {
-            mo.x = mo.x * -1;
-            this.ctx.restore();
-        }
     }
-    //#endregion
+
+    flipImageBack(mo){
+        mo.x = mo.x * -1;
+            this.ctx.restore();
+    }
 }
