@@ -17,6 +17,7 @@ class Coin extends ConsumeableObject {
 
     constructor(x, y, offsetx) {
         super();
+        Intervalhub.startInterval(this.getRealFrame, 1000 / 60);
         this.loadImage(`img/8_coin/coin_1.png`);
         this.loadImages(ImageHub.images_of_coins);
         this.animate();

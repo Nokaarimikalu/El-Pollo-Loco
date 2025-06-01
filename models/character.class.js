@@ -16,6 +16,7 @@ class Character extends MoveableObject {
     ry;
     rw;
     rh;
+    idleTime = new Date().getTime();
 
     constructor() {
         super();
@@ -23,18 +24,32 @@ class Character extends MoveableObject {
         this.loadImage(ImageHub.mainCharacter.idle[0]);
         this.loadImages(ImageHub.mainCharacter.walk);
         this.loadImages(ImageHub.mainCharacter.jump);
+        this.loadImages(ImageHub.mainCharacter.hurt);
+        this.loadImages(ImageHub.mainCharacter.dead);
+        this.loadImages(ImageHub.mainCharacter.idle);
+        this.loadImages(ImageHub.mainCharacter.long_idle);
         Intervalhub.startInterval(this.applyGravity, 1000 / 25);
         Intervalhub.startInterval(this.animate, 1000 / 6);
         Intervalhub.startInterval(this.leftAndRightAnimation, 1000 / 60);
     }
 
     animate = () => {
-        if (this.isAboveGround()) {
+        if (this.isDead()) {
+            this.playAnimation(ImageHub.mainCharacter.dead);
+        } else if (this.isHurtAnimation()) {
+            this.playAnimation(ImageHub.mainCharacter.hurt);
+            this.updateActivity();
+        } else if (this.isAboveGround()) {
             this.playAnimation(ImageHub.mainCharacter.jump);
+            this.updateActivity();
+        } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+            this.playAnimation(ImageHub.mainCharacter.walk);
+            this.updateActivity();
         } else {
-            //Walk animation
-            if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                this.playAnimation(ImageHub.mainCharacter.walk);
+            if (this.isLongIdle()) {
+                this.playAnimation(ImageHub.mainCharacter.long_idle);
+            } else {
+                this.playAnimation(ImageHub.mainCharacter.idle);
             }
         }
     };

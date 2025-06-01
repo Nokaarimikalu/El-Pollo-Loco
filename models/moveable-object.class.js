@@ -11,6 +11,8 @@ class MoveableObject {
     speedY = 0;
     acceleration = 2.5;
     energy = 100;
+    lastHit = 0;
+    lastAction = new Date().getTime();
 
     applyGravity = () => {
         if (this.isAboveGround() || this.speedY > 0) {
@@ -31,15 +33,15 @@ class MoveableObject {
         return this.rx + this.rw > mo.rx && this.ry + this.rh > mo.ry && this.rx < mo.rx + mo.rw && this.ry < mo.ry + mo.rh;
     }
 
-    drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof SalsaBottle || this instanceof Coin) {
-            ctx.beginPath();
-            ctx.lineWidth = "5";
-            ctx.strokeStyle = "blue";
-            ctx.rect(this.x, this.y, this.width, this.height);
-            ctx.stroke();
-        }
-    }
+    // drawFrame(ctx) {
+    //     if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof SalsaBottle || this instanceof Coin) {
+    //         ctx.beginPath();
+    //         ctx.lineWidth = "5";
+    //         ctx.strokeStyle = "blue";
+    //         ctx.rect(this.x, this.y, this.width, this.height);
+    //         ctx.stroke();
+    //     }
+    // }
 
     drawFrameoffset(ctx) {
         if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof SalsaBottle || this instanceof Coin) {
@@ -94,4 +96,32 @@ class MoveableObject {
     jump = () => {
         this.speedY = 30;
     };
+
+    hit() {
+        this.energy -= 5;
+        if (this.energy < 0) {
+            this.energy = 0;
+        } else {
+            this.lastHit = new Date().getTime();
+        }
+    }
+
+    isDead() {
+        return this.energy == 0;
+    }
+
+    isHurtAnimation() {
+        let timepassed = new Date().getTime() - this.lastHit;
+        timepassed = timepassed / 1000;
+        return timepassed < 1;
+    }
+
+    updateActivity() {
+        this.lastAction = new Date().getTime();
+    }
+
+    isLongIdle() {
+        let timePassed = (new Date().getTime() - this.lastAction) / 1000;
+        return timePassed > 3;
+    }
 }

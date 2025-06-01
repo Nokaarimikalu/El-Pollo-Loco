@@ -14,6 +14,7 @@ class SalsaBottle extends ConsumeableObject {
 
     constructor(x) {
         super();
+        Intervalhub.startInterval(this.getRealFrame, 1000 / 60);
         const random_i = Math.floor(Math.random() * ImageHub.salsa.on_ground.length); //floor rundet ab
         const random_img = ImageHub.salsa.on_ground[random_i];
         this.loadImage(random_img);

@@ -12,23 +12,8 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        Intervalhub.startInterval(this.checkCollision, 1000 / 10);
+        Intervalhub.startInterval(this.checkCollision, 1000 / 5);
     }
-
-    setWorld() {
-        // damit der char weiss auf welche World er sich bezieht
-        this.character.world = this;
-    }
-
-    checkCollision = () => {
-        this.level.salsa.forEach((salsa) => {
-            if (this.character.isColliding(salsa)) {
-                this.character.energy -= 2;
-                console.log(this.character.energy);
-                console.log("salsa");
-            }
-        });
-    };
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -38,15 +23,26 @@ class World {
         this.addToMap(this.character);
 
         this.ctx.translate(-this.camera_x, 0);
-        this.refreshrate();
-    }
-
-    refreshrate() {
         let self = this;
         requestAnimationFrame(function () {
             self.draw();
         });
     }
+
+    setWorld() {
+        // damit der char weiss auf welche World er sich bezieht
+        this.character.world = this;
+    }
+
+    checkCollision = () => {
+        this.level.enemies.forEach((enemie) => {
+            if (this.character.isColliding(enemie)) {
+                this.character.hit();
+                console.log(this.character.energy);
+                this.character.isHurtAnimation();
+            }
+        });
+    };
 
     drawLevelImages() {
         this.addObjectsToMap(this.level.backgroundObjects);
@@ -66,11 +62,9 @@ class World {
         if (mo.otherDirection) {
             this.flipImage(mo);
         }
-
         mo.draw(this.ctx);
-        mo.drawFrame(this.ctx);
+        // mo.drawFrame(this.ctx);
         mo.drawFrameoffset(this.ctx);
-
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
