@@ -1,11 +1,4 @@
-class MoveableObject {
-    x = 100;
-    y = 350;
-    img;
-    width = 80;
-    height = 80;
-    currentImage = 0;
-    ImageCache = {};
+class MoveableObject extends DrawableObject {
     speed = 0.15;
     otherDirection = false;
     speedY = 0;
@@ -23,10 +16,6 @@ class MoveableObject {
 
     isAboveGround() {
         return this.y < 170;
-    }
-
-    draw(ctx) {
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
 
     isColliding(mo) {
@@ -65,19 +54,6 @@ class MoveableObject {
         this.rh = this.height - this.offset.top - this.offset.bottom;
     };
 
-    loadImage(path) {
-        this.img = new Image();
-        this.img.src = path;
-    }
-
-    loadImages(array) {
-        array.forEach((path) => {
-            let img = new Image();
-            img.src = path;
-            this.ImageCache[path] = img;
-        });
-    }
-
     playAnimation(images) {
         let i = this.currentImage % images.length;
         let path = images[i];
@@ -111,8 +87,7 @@ class MoveableObject {
     }
 
     isHurtAnimation() {
-        let timepassed = new Date().getTime() - this.lastHit;
-        timepassed = timepassed / 1000;
+        let timepassed = (new Date().getTime() - this.lastHit) / 1000;
         return timepassed < 1;
     }
 

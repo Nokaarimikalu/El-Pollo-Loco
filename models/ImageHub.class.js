@@ -46,11 +46,7 @@ class ImageHub {
             "img/2_character_pepe/3_jump/J-39.png",
         ],
 
-        hurt: [
-            "img/2_character_pepe/4_hurt/H-41.png",
-            "img/2_character_pepe/4_hurt/H-42.png",
-            "img/2_character_pepe/4_hurt/H-43.png"
-        ],
+        hurt: ["img/2_character_pepe/4_hurt/H-41.png", "img/2_character_pepe/4_hurt/H-42.png", "img/2_character_pepe/4_hurt/H-43.png"],
 
         dead: [
             "img/2_character_pepe/5_dead/D-51.png",
@@ -70,25 +66,21 @@ class ImageHub {
             "img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
         ],
 
-        dead: [
-            "img/3_enemies_chicken/chicken_normal/2_dead/dead.png",
-        ],
+        dead: ["img/3_enemies_chicken/chicken_normal/2_dead/dead.png"],
     };
 
     static chicken_small = {
-        walk:[
+        walk: [
             "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
             "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
             "img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
         ],
 
-        dead: [
-            "img/3_enemies_chicken/chicken_small/2_dead/dead.png",
-        ],
-    }
+        dead: ["img/3_enemies_chicken/chicken_small/2_dead/dead.png"],
+    };
 
     static chicken_boss = {
-        walk:[
+        walk: [
             "img/4_enemie_boss_chicken/1_walk/G1.png",
             "img/4_enemie_boss_chicken/1_walk/G2.png",
             "img/4_enemie_boss_chicken/1_walk/G3.png",
@@ -117,24 +109,13 @@ class ImageHub {
             "img/4_enemie_boss_chicken/3_attack/G20.png",
         ],
 
-        hurt: [
-            "img/4_enemie_boss_chicken/4_hurt/G21.png",
-            "img/4_enemie_boss_chicken/4_hurt/G22.png",
-            "img/4_enemie_boss_chicken/4_hurt/G23.png",
-        ],
+        hurt: ["img/4_enemie_boss_chicken/4_hurt/G21.png", "img/4_enemie_boss_chicken/4_hurt/G22.png", "img/4_enemie_boss_chicken/4_hurt/G23.png"],
 
-        dead: [
-            "img/4_enemie_boss_chicken/5_dead/G24.png",
-            "img/4_enemie_boss_chicken/5_dead/G25.png",
-            "img/4_enemie_boss_chicken/5_dead/G26.png",
-        ]
-    }
+        dead: ["img/4_enemie_boss_chicken/5_dead/G24.png", "img/4_enemie_boss_chicken/5_dead/G25.png", "img/4_enemie_boss_chicken/5_dead/G26.png"],
+    };
 
     static salsa = {
-        on_ground: [
-            "img/6_salsa_bottle/1_salsa_bottle_on_ground.png",
-            "img/6_salsa_bottle/2_salsa_bottle_on_ground.png",
-        ],
+        on_ground: ["img/6_salsa_bottle/1_salsa_bottle_on_ground.png", "img/6_salsa_bottle/2_salsa_bottle_on_ground.png"],
 
         spinning_salsa: [
             "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
@@ -151,13 +132,34 @@ class ImageHub {
             "img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png",
             "img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
         ],
-    }
+    };
 
-    static images_of_coins = [
-        "img/8_coin/coin_1.png",
-        "img/8_coin/coin_2.png",
-    ]
+    static images_of_coins = ["img/8_coin/coin_1.png", "img/8_coin/coin_2.png"];
 
-
-
+    static hitpointbar = {
+        coins: [
+            "img/7_statusbars/1_statusbar/1_statusbar_bottle/blue/0.png",
+            "img/7_statusbars/1_statusbar/1_statusbar_bottle/blue/20.png",
+            "img/7_statusbars/1_statusbar/1_statusbar_bottle/blue/40.png",
+            "img/7_statusbars/1_statusbar/1_statusbar_bottle/blue/60.png",
+            "img/7_statusbars/1_statusbar/1_statusbar_bottle/blue/80.png",
+            "img/7_statusbars/1_statusbar/1_statusbar_bottle/blue/100.png",
+        ],
+        hp: [
+            "img/7_statusbars/1_statusbar/2_statusbar_health/blue/0.png",
+            "img/7_statusbars/1_statusbar/2_statusbar_health/blue/20.png",
+            "img/7_statusbars/1_statusbar/2_statusbar_health/blue/40.png",
+            "img/7_statusbars/1_statusbar/2_statusbar_health/blue/60.png",
+            "img/7_statusbars/1_statusbar/2_statusbar_health/blue/80.png",
+            "img/7_statusbars/1_statusbar/2_statusbar_health/blue/100.png",
+        ],
+        bottle: [
+            "img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png",
+            "img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png",
+            "img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png",
+            "img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png",
+            "img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png",
+            "img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png",
+        ],
+    };
 }
