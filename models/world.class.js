@@ -1,5 +1,6 @@
 class World {
     character = new Character();
+    hp_bar = new HpBar();
     level = level1;
     canvas;
     ctx;
@@ -12,21 +13,22 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        Intervalhub.startInterval(this.checkCollision, 1000 / 5);
+        Intervalhub.startInterval(this.checkCollision, 1000 / 60);
     }
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // Kamera bewegt sich mit
         this.ctx.translate(this.camera_x, 0);
-
+        // Level-Bilder + Character zeichnen
         this.drawLevelImages();
         this.addToMap(this.character);
-
+        // Kamera zurücksetzen
         this.ctx.translate(-this.camera_x, 0);
-        let self = this;
-        requestAnimationFrame(function () {
-            self.draw();
-        });
+        // HUD was sich nicht bewegen soll
+        this.addToMap(this.hp_bar);
+        //Wiederholung der Frames
+        requestAnimationFrame(() => this.draw());
     }
 
     setWorld() {
@@ -38,8 +40,8 @@ class World {
         this.level.enemies.forEach((enemie) => {
             if (this.character.isColliding(enemie)) {
                 this.character.hit();
-                console.log(this.character.energy);
                 this.character.isHurtAnimation();
+                this.hp_bar.setPercentage(this.character.energy);
             }
         });
     };
