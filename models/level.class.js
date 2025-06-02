@@ -1,17 +1,40 @@
-class Level{
-    
-    enemies;
-    clouds;
-    backgroundObjects;
+class Level {
     level_end_x = 2000;
-    coins;
-    salsa;
 
-    constructor(enemies, clouds, backgroundObjects, coins, salsa){
-        this.enemies = enemies;
-        this.clouds = clouds;
-        this.backgroundObjects = backgroundObjects;
-        this.coins = coins;
-        this.salsa = salsa;
-    }
+    enemies = [new Chicken(), new Chicken(), new Chicken(), new Chicken(), new Chicken(), new Endboss()];
+    clouds = [new Cloud()];
+    backgroundObjects = [
+        new BackgroundObject(`img/5_background/layers/air.png`, -719),
+        new BackgroundObject(`img/5_background/layers/3_third_layer/2.png`, -719),
+        new BackgroundObject(`img/5_background/layers/2_second_layer/2.png`, -719),
+        new BackgroundObject(`img/5_background/layers/1_first_layer/2.png`, -719),
+        new BackgroundObject(`img/5_background/layers/air.png`, 0),
+        new BackgroundObject(`img/5_background/layers/3_third_layer/1.png`, 0),
+        new BackgroundObject(`img/5_background/layers/2_second_layer/1.png`, 0),
+        new BackgroundObject(`img/5_background/layers/1_first_layer/1.png`, 0),
+        new BackgroundObject(`img/5_background/layers/air.png`, 719),
+        new BackgroundObject(`img/5_background/layers/3_third_layer/2.png`, 719),
+        new BackgroundObject(`img/5_background/layers/2_second_layer/2.png`, 719),
+        new BackgroundObject(`img/5_background/layers/1_first_layer/2.png`, 719),
+        new BackgroundObject(`img/5_background/layers/air.png`, 719 * 2),
+        new BackgroundObject(`img/5_background/layers/3_third_layer/1.png`, 719 * 2),
+        new BackgroundObject(`img/5_background/layers/2_second_layer/1.png`, 719 * 2),
+        new BackgroundObject(`img/5_background/layers/1_first_layer/1.png`, 719 * 2),
+        new BackgroundObject(`img/5_background/layers/air.png`, 719 * 3),
+        new BackgroundObject(`img/5_background/layers/3_third_layer/2.png`, 719 * 3),
+        new BackgroundObject(`img/5_background/layers/2_second_layer/2.png`, 719 * 3),
+        new BackgroundObject(`img/5_background/layers/1_first_layer/2.png`, 719 * 3),
+    ];
+    coins = [new Coin(200, 200, 1)];
+    // [...Coin.multipleCoins(200), ...Coin.multipleCoins(900)],
+    salsa = [
+        new SalsaBottle(100),
+        new SalsaBottle(500),
+        new SalsaBottle(900),
+        new SalsaBottle(1100),
+        new SalsaBottle(1400),
+        new SalsaBottle(1700),
+        new SalsaBottle(2000),
+        new SalsaBottle(2400),
+    ];
 }

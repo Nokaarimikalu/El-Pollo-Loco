@@ -1,7 +1,9 @@
 class World {
     character = new Character();
     hp_bar = new HpBar();
-    level = level1;
+    salsa_bar = new Salsa_Bar();
+    coin_bar = new coin_bar();
+    level = new Level();
     canvas;
     ctx;
     keyboard;
@@ -27,6 +29,8 @@ class World {
         this.ctx.translate(-this.camera_x, 0);
         // HUD was sich nicht bewegen soll
         this.addToMap(this.hp_bar);
+        this.addToMap(this.salsa_bar);
+        this.addToMap(this.coin_bar);
         //Wiederholung der Frames
         requestAnimationFrame(() => this.draw());
     }
@@ -46,6 +50,13 @@ class World {
         });
     };
 
+    checkCollisionSalsa = () => {
+        this.level.salsa.forEach((s) => {
+            if (this.character.isColliding(s)) {
+            }
+        });
+    };
+
     drawLevelImages() {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
@@ -55,8 +66,8 @@ class World {
     }
 
     addObjectsToMap(objects) {
-        objects.forEach((o) => {
-            this.addToMap(o);
+        objects.forEach((obj) => {
+            this.addToMap(obj);
         });
     }
 
