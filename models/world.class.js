@@ -16,6 +16,8 @@ class World {
         this.draw();
         this.setWorld();
         Intervalhub.startInterval(this.checkCollision, 1000 / 60);
+        Intervalhub.startInterval(this.checkCollisionSalsa, 1000 / 60);
+        Intervalhub.startInterval(this.checkCollisionCoin, 1000 / 60);
     }
 
     draw() {
@@ -51,10 +53,31 @@ class World {
     };
 
     checkCollisionSalsa = () => {
-        this.level.salsa.forEach((s) => {
-            if (this.character.isColliding(s)) {
+        for (let i = this.level.salsa.length - 1; i >= 0; i--) {
+            const s = this.level.salsa[i];
+            if (this.salsa_bar.percentage !== 100) {
+                if (this.character.isColliding(s)) {
+                    this.level.salsa.splice(i, 1);
+                    this.salsa_bar.setPercentage((this.salsa_bar.percentage += 20));
+                }
+            } else {
+                return;
             }
-        });
+        }
+    };
+
+    checkCollisionCoin = () => {
+        for (let i = this.level.coins.length - 1; i >= 0; i--) {
+            const s = this.level.coins[i];
+            if (this.coin_bar.percentage !== 100) {
+                if (this.character.isColliding(s)) {
+                    this.level.coins.splice(i, 1);
+                    this.coin_bar.setPercentage((this.coin_bar.percentage += 6.25));
+                }
+            } else {
+                return;
+            }
+        }
     };
 
     drawLevelImages() {

@@ -7,11 +7,14 @@ class coin_bar extends Statusbar {
     constructor() {
         super();
         this.loadImages(ImageHub.hitpointbar.coins);
-        this.setPercentage(100);
+        this.setPercentage(0);
     }
 
     setPercentage(percentage) {
         this.percentage = percentage;
+        if (this.percentage > 100) {
+            this.percentage = 100;
+        }
         let path = ImageHub.hitpointbar.coins[this.resolveImageIndex()];
         this.img = this.ImageCache[path];
     }
