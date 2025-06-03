@@ -30,9 +30,7 @@ class World {
         // Kamera zurücksetzen
         this.ctx.translate(-this.camera_x, 0);
         // HUD was sich nicht bewegen soll
-        this.addToMap(this.hp_bar);
-        this.addToMap(this.salsa_bar);
-        this.addToMap(this.coin_bar);
+        this.drawHUD();
         //Wiederholung der Frames
         requestAnimationFrame(() => this.draw());
     }
@@ -44,11 +42,14 @@ class World {
 
     checkCollision = () => {
         this.level.enemies.forEach((enemie) => {
-            if (this.character.isColliding(enemie)) {
+            if (this.character.isColliding(enemie) /* && character war NICHT ueber den gegner*/) {
                 this.character.hit();
                 this.character.isHurtAnimation();
                 this.hp_bar.setPercentage(this.character.energy);
             }
+            // if(character ist ueber den gegner){
+            // soll enemy sterben()
+            // }
         });
     };
 
@@ -86,6 +87,12 @@ class World {
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.salsa);
         this.addObjectsToMap(this.level.enemies);
+    }
+
+    drawHUD() {
+        this.addToMap(this.hp_bar);
+        this.addToMap(this.salsa_bar);
+        this.addToMap(this.coin_bar);
     }
 
     addObjectsToMap(objects) {

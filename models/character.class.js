@@ -22,12 +22,7 @@ class Character extends MoveableObject {
         super();
         Intervalhub.startInterval(this.getRealFrame, 1000 / 60);
         this.loadImage(ImageHub.mainCharacter.idle[0]);
-        this.loadImages(ImageHub.mainCharacter.walk);
-        this.loadImages(ImageHub.mainCharacter.jump);
-        this.loadImages(ImageHub.mainCharacter.hurt);
-        this.loadImages(ImageHub.mainCharacter.dead);
-        this.loadImages(ImageHub.mainCharacter.idle);
-        this.loadImages(ImageHub.mainCharacter.long_idle);
+        this.loadImagesFromMainChar();
         Intervalhub.startInterval(this.applyGravity, 1000 / 25);
         Intervalhub.startInterval(this.animate, 1000 / 6);
         Intervalhub.startInterval(this.leftAndRightAnimation, 1000 / 60);
@@ -69,4 +64,13 @@ class Character extends MoveableObject {
         }
         this.world.camera_x = -this.x + 100;
     };
+
+    loadImagesFromMainChar() {
+        this.loadImages(ImageHub.mainCharacter.walk);
+        this.loadImages(ImageHub.mainCharacter.jump);
+        this.loadImages(ImageHub.mainCharacter.hurt);
+        this.loadImages(ImageHub.mainCharacter.dead);
+        this.loadImages(ImageHub.mainCharacter.idle);
+        this.loadImages(ImageHub.mainCharacter.long_idle);
+    }
 }
