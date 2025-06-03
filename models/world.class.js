@@ -8,6 +8,8 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+    throwableObjects = [];
+    sperre = true;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext(`2d`);
@@ -41,16 +43,9 @@ class World {
     }
 
     checkCollision = () => {
-        this.level.enemies.forEach((enemie) => {
-            if (this.character.isColliding(enemie) /* && character war NICHT ueber den gegner*/) {
-                this.character.hit();
-                this.character.isHurtAnimation();
-                this.hp_bar.setPercentage(this.character.energy);
-            }
-            // if(character ist ueber den gegner){
-            // soll enemy sterben()
-            // }
-        });
+        this.jumpCollision();
+        this.enemyToCharacterCollision();
+        this.checkThrowableObjects();
     };
 
     checkCollisionSalsa = () => {
@@ -81,12 +76,52 @@ class World {
         }
     };
 
+    jumpCollision() {
+        for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+            const chicken = this.level.enemies[i];
+            // 1. Kollision von oben + Chicken stirbt
+            if (!chicken.dead && this.character.isAboveGround() && this.character.isColliding(chicken)) {
+                chicken.deadChicken(ImageHub.chicken_normal.dead);
+                chicken.dead = true;
+                this.character.speedY = 15;
+                this.level.enemies.splice(i, 1);
+                this.level.deadEnemies.push(chicken);
+                setTimeout(() => {
+                    const index = this.level.deadEnemies.indexOf(chicken);
+                    if (index !== -1) {
+                        this.level.deadEnemies.splice(index, 1);
+                    }
+                }, 1000);
+            }
+        }
+    }
+    enemyToCharacterCollision() {
+        // 2. Seitliche Kollision
+        this.level.enemies.forEach((enemie) => {
+            if (this.character.isColliding(enemie)) {
+                this.character.hit();
+                this.hp_bar.setPercentage(this.character.energy);
+            }
+        });
+    }
+
+    checkThrowableObjects() {
+        if (this.keyboard.C && this.sperre) {
+            this.sperre = false;
+            let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120);
+            this.throwableObjects.push(bottle);
+            console.log(this.throwableObjects.length);
+        }
+    }
+
     drawLevelImages() {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.salsa);
         this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.level.deadEnemies);
+        this.addObjectsToMap(this.throwableObjects);
     }
 
     drawHUD() {
