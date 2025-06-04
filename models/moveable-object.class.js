@@ -74,10 +74,4 @@ class MoveableObject extends DrawableObject {
         let timePassed = (new Date().getTime() - this.lastAction) / 1000;
         return timePassed > 3;
     }
-
-    deadChicken(imagehubNAME) {
-        this.loadImage(imagehubNAME);
-        this.dead = false;
-        this.speed = 0;
-    }
 }

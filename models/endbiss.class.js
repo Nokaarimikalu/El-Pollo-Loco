@@ -1,4 +1,6 @@
 class Endboss extends MoveableObject {
+    hp = 300;
+    isHit = false;
     offset = {
         top: 70,
         right: 15,

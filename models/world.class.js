@@ -20,7 +20,6 @@ class World {
         Intervalhub.startInterval(this.checkCollision, 1000 / 60);
         Intervalhub.startInterval(this.checkCollisionSalsa, 1000 / 60);
         Intervalhub.startInterval(this.checkCollisionCoin, 1000 / 60);
-        Intervalhub.startInterval(console.log(this.throwableObjects), 1000 / 1);
     }
 
     draw() {
@@ -47,6 +46,7 @@ class World {
         this.jumpCollision();
         this.enemyToCharacterCollision();
         this.checkThrowableObjects();
+        this.checkThrowableCollision();
     };
 
     checkCollisionSalsa = () => {
@@ -81,10 +81,8 @@ class World {
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
             const chicken = this.level.enemies[i];
             // 1. Kollision von oben + Chicken stirbt
-            if (!chicken.dead && this.character.isAboveGround() && this.character.isColliding(chicken) && this.character.speedY < 0) {
-                chicken.deadChicken(ImageHub.chicken_normal.dead);
-                chicken.deadChicken(ImageHub.chicken_small.dead);
-                chicken.dead = true;
+            if (!chicken.isDead && this.character.isAboveGround() && this.character.isColliding(chicken) && this.character.speedY < 0) {
+                chicken.isDead = true;
                 this.character.speedY = 15;
                 this.level.enemies.splice(i, 1);
                 this.level.deadEnemies.push(chicken);
@@ -111,11 +109,51 @@ class World {
         if (this.keyboard.C && this.sperre) {
             if (this.salsa_bar.percentage != 0) {
                 this.sperre = false;
-                let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120);
-                this.throwableObjects.push(bottle);
-                this.salsa_bar.setPercentage((this.salsa_bar.percentage -= 20));
-                console.log(this.throwableObjects.length);
+                this.generateNewThrowableSalsa();
             }
+        }
+    }
+
+    generateNewThrowableSalsa() {
+        let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120);
+        this.throwableObjects.push(bottle);
+        this.salsa_bar.setPercentage((this.salsa_bar.percentage -= 20));
+        setTimeout(() => {
+            const index = this.throwableObjects.indexOf(bottle);
+            if (index !== -1) {
+                this.throwableObjects.splice(index, 1);
+            }
+        }, 4000);
+    }
+
+    checkThrowableCollision() {
+        this.throwableObjects.forEach((salsa) => {
+            for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+                const enemy = this.level.enemies[i];
+                if (!enemy.isHit && (enemy instanceof Chicken || enemy instanceof SmallChicken) && salsa.isColliding(enemy)) {
+                    this.killNormalEnemies(enemy, salsa, i);
+                }
+            }
+        });
+    }
+
+    killNormalEnemies(enemy, salsa, index) {
+        enemy.hp -= 25;
+        enemy.isHit = true;
+        salsa.gotHit = true;
+        if (enemy.hp <= 0) {
+            enemy.isDead = true;
+            this.level.enemies.splice(index, 1);
+            this.level.deadEnemies.push(enemy);
+            setTimeout(() => {
+                if (this.level.deadEnemies.indexOf(enemy) !== -1) {
+                    this.level.deadEnemies.splice(this.level.deadEnemies.indexOf(enemy), 1);
+                }
+            }, 2000);
+        } else {
+            setTimeout(() => {
+                enemy.isHit = false;
+            }, 500);
         }
     }
 
