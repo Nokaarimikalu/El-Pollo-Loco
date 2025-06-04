@@ -27,7 +27,15 @@ class DrawableObject {
     }
 
     drawFrameoffset(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof SalsaBottle || this instanceof Coin) {
+        if (
+            this instanceof Character ||
+            this instanceof Chicken ||
+            this instanceof Endboss ||
+            this instanceof SalsaBottle ||
+            this instanceof Coin ||
+            this instanceof SmallChicken ||
+            this instanceof throwableSalsa
+        ) {
             ctx.beginPath();
             ctx.lineWidth = "5";
             ctx.strokeStyle = "red";

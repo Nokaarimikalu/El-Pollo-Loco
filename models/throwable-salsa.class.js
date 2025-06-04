@@ -1,4 +1,15 @@
 class throwableSalsa extends MoveableObject {
+    offset = {
+        top: 10,
+        right: 10,
+        bottom: 10,
+        left: 10,
+    };
+
+    rx;
+    ry;
+    rw;
+    rh;
     height = 60;
     width = 50;
 
@@ -25,8 +36,18 @@ class throwableSalsa extends MoveableObject {
         this.x += 10;
     };
 
+    stopsAtTheGround() {
+        if (this.y > 170) {
+            Intervalhub.startInterval(this.applyGravitySalsa, 1000 / 30);
+        } else {
+            return;
+        }
+    }
+
     applyGravitySalsa = () => {
-        this.y -= this.speedY;
-        this.speedY -= this.acceleration;
+        if (this.y > 170) {
+            this.y -= this.speedY;
+            this.speedY -= this.acceleration;
+        }
     };
 }

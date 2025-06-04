@@ -19,7 +19,7 @@ class Chicken extends MoveableObject {
         this.x = 300 + Math.random() * 1000;
         this.speed = 0.3 + Math.random() * 1;
         Intervalhub.startInterval(this.animate, 1000 / 5);
-        Intervalhub.startInterval(this.moveLeft, 1000 / 60);
+        //Intervalhub.startInterval(this.moveLeft, 1000 / 60);
     }
 
     animate = () => {
@@ -48,7 +48,7 @@ class SmallChicken extends MoveableObject {
         this.x = 300 + Math.random() * 1000;
         this.speed = 0.3 + Math.random() * 1;
         Intervalhub.startInterval(this.animate, 1000 / 5);
-        Intervalhub.startInterval(this.moveLeft, 1000 / 60);
+        //Intervalhub.startInterval(this.moveLeft, 1000 / 60);
     }
 
     animate = () => {

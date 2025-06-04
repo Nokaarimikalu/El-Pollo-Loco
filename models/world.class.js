@@ -20,6 +20,7 @@ class World {
         Intervalhub.startInterval(this.checkCollision, 1000 / 60);
         Intervalhub.startInterval(this.checkCollisionSalsa, 1000 / 60);
         Intervalhub.startInterval(this.checkCollisionCoin, 1000 / 60);
+        Intervalhub.startInterval(console.log(this.throwableObjects), 1000 / 1);
     }
 
     draw() {
@@ -80,8 +81,9 @@ class World {
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
             const chicken = this.level.enemies[i];
             // 1. Kollision von oben + Chicken stirbt
-            if (!chicken.dead && this.character.isAboveGround() && this.character.isColliding(chicken)) {
+            if (!chicken.dead && this.character.isAboveGround() && this.character.isColliding(chicken) && this.character.speedY < 0) {
                 chicken.deadChicken(ImageHub.chicken_normal.dead);
+                chicken.deadChicken(ImageHub.chicken_small.dead);
                 chicken.dead = true;
                 this.character.speedY = 15;
                 this.level.enemies.splice(i, 1);
@@ -107,10 +109,13 @@ class World {
 
     checkThrowableObjects() {
         if (this.keyboard.C && this.sperre) {
-            this.sperre = false;
-            let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120);
-            this.throwableObjects.push(bottle);
-            console.log(this.throwableObjects.length);
+            if (this.salsa_bar.percentage != 0) {
+                this.sperre = false;
+                let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120);
+                this.throwableObjects.push(bottle);
+                this.salsa_bar.setPercentage((this.salsa_bar.percentage -= 20));
+                console.log(this.throwableObjects.length);
+            }
         }
     }
 
