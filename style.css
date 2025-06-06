@@ -17,3 +17,4 @@ div {
 canvas {
     background-color: black;
 }
+/* @media (orientation: portrait) -> für wenn das Handy im vertikalen Modus ist ;) (CSS) */

@@ -1,5 +1,5 @@
 class Level {
-    level_end_x = 2000;
+    level_end_x = 3000;
     deadEnemies = [];
 
     enemies = [new SmallChicken(), new Chicken(), new SmallChicken(), new Chicken(), new SmallChicken(), new Chicken(), new Chicken(), new Endboss()];

@@ -1,5 +1,6 @@
 class World {
     character = new Character();
+    endboss = new Endboss();
     hp_bar = new HpBar();
     salsa_bar = new Salsa_Bar();
     coin_bar = new coin_bar();
@@ -10,6 +11,7 @@ class World {
     camera_x = 0;
     throwableObjects = [];
     sperre = true;
+    check = false;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext(`2d`);
@@ -40,6 +42,8 @@ class World {
     setWorld() {
         // damit der char weiss auf welche World er sich bezieht
         this.character.world = this;
+        this.endboss = this.level.enemies.find((e) => e instanceof Endboss);
+        this.endboss.world = this;
     }
 
     checkCollision = () => {
@@ -47,6 +51,7 @@ class World {
         this.enemyToCharacterCollision();
         this.checkThrowableObjects();
         this.checkThrowableCollision();
+        this.walkingEndboss();
     };
 
     checkCollisionSalsa = () => {
@@ -98,7 +103,11 @@ class World {
     enemyToCharacterCollision() {
         // 2. Seitliche Kollision
         this.level.enemies.forEach((enemie) => {
-            if (this.character.isColliding(enemie)) {
+            if (enemie instanceof Endboss && this.character.isColliding(enemie)) {
+                enemie.attackAnimation();
+                this.character.hit();
+                this.hp_bar.setPercentage(this.character.energy);
+            } else if (this.character.isColliding(enemie)) {
                 this.character.hit();
                 this.hp_bar.setPercentage(this.character.energy);
             }
@@ -131,14 +140,34 @@ class World {
             for (let i = this.level.enemies.length - 1; i >= 0; i--) {
                 const enemy = this.level.enemies[i];
                 if (!enemy.isHit && (enemy instanceof Chicken || enemy instanceof SmallChicken) && salsa.isColliding(enemy)) {
+                    enemy.hp -= 25;
                     this.killNormalEnemies(enemy, salsa, i);
+                } else if (!enemy.isHit && enemy instanceof Endboss && salsa.isColliding(enemy) && !salsa.gotHit) {
+                    enemy.hp -= 50;
+                    this.killNormalEnemies(enemy, salsa, i);
+                    console.log(enemy.hp);
+                    //bossbar hier mit hinzufuegen
                 }
             }
         });
     }
 
+    walkingEndboss() {
+        if (this.character.x > 1000) {
+            this.check = true;
+        }
+        if (this.check) {
+            this.endboss.playerIsNear = true;
+            if (this.endboss.x > 300) {
+                this.endboss.x -= 3;
+            } else {
+                this.endboss.playerIsNear = false;
+                return;
+            }
+        }
+    }
+
     killNormalEnemies(enemy, salsa, index) {
-        enemy.hp -= 25;
         enemy.isHit = true;
         salsa.gotHit = true;
         if (enemy.hp <= 0) {
@@ -153,7 +182,7 @@ class World {
         } else {
             setTimeout(() => {
                 enemy.isHit = false;
-            }, 500);
+            }, 2000);
         }
     }
 
