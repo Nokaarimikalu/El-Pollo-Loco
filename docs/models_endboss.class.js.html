@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/endboss.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/endboss.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// #region class Endboss
+
+/**
+ * Repräsentiert den Endgegner im Spiel.
+ * Nutzt Animationen, Treffer- und Angriffszustände.
+ */
+class Endboss extends MoveableObject {
+    // #region Properties
+
+    /** Lebenspunkte des Endgegners */
+    hp = 100;
+
+    /** Wurde der Endboss kürzlich getroffen? */
+    isHit = false;
+
+    /** Darf der Endboss angreifen? */
+    canAttack = true;
+
+    /** Führt der Endboss gerade einen Angriff aus? */
+    isAttacking = false;
+
+    /** Offset-Werte zur Anpassung der Kollision */
+    offset = {
+        top: 70,
+        right: 15,
+        bottom: 20,
+        left: 15,
+    };
+
+    /** Höhe des Endbosses */
+    height = 400;
+
+    /** Breite des Endbosses */
+    width = 250;
+
+    /** Y-Position im Spiel */
+    y = 40;
+
+    /** X-Position im Spiel (meist ganz rechts) */
+    x = 2300;
+
+    // #endregion
+
+    /**
+     * Erstellt einen neuen Endboss und startet Animation + Kollisionsrahmenberechnung.
+     */
+    constructor() {
+        super();
+        Intervalhub.startInterval(this.getRealFrame, 1000 / 60);
+        Intervalhub.startInterval(() => this.animate(), 1000 / 5);
+        this.loadEndbossImages();
+    }
+
+    // #region Initialisierung
+
+    /**
+     * Lädt alle benötigten Bilder für den Endboss (Animationen &amp; Zustände).
+     */
+    loadEndbossImages() {
+        this.loadImage(ImageHub.chicken_boss.attack[0]);
+        this.loadImage(ImageHub.chicken_boss.alert[0]);
+        this.loadImage(ImageHub.chicken_boss.hurt[0]);
+        this.loadImage(ImageHub.chicken_boss.dead[0]);
+        this.loadImage(ImageHub.chicken_boss.walk[0]);
+
+        this.loadImages(ImageHub.chicken_boss.alert);
+        this.loadImages(ImageHub.chicken_boss.hurt);
+        this.loadImages(ImageHub.chicken_boss.dead);
+        this.loadImages(ImageHub.chicken_boss.attack);
+        this.loadImages(ImageHub.chicken_boss.walk);
+    }
+
+    // #endregion
+
+    // #region Animation &amp; Verhalten
+
+    /**
+     * Wählt basierend auf dem Zustand die passende Animation.
+     */
+    animate() {
+        if (this.hp == 0) {
+            this.playAnimation(ImageHub.chicken_boss.dead);
+        } else if (this.isHit) {
+            this.playAnimation(ImageHub.chicken_boss.hurt);
+            setTimeout(() => {
+                this.isHit = false;
+            }, 300);
+        } else if (this.isAttacking) {
+            this.playAnimation(ImageHub.chicken_boss.attack);
+        } else if (this.playerIsNear) {
+            this.playAnimation(ImageHub.chicken_boss.walk);
+        } else {
+            this.playAnimation(ImageHub.chicken_boss.alert);
+        }
+    }
+
+    // #endregion
+
+    // #region Angriff
+
+    /**
+     * Führt die Angriffsanimation durch und aktiviert Sperrzeiten.
+     */
+    attackAnimation() {
+        if (!this.isAttacking &amp;&amp; this.canAttack) {
+            this.isAttacking = true;
+            this.canAttack = false;
+
+            setTimeout(() => {
+                this.isAttacking = false;
+            }, 500);
+
+            setTimeout(() => {
+                this.canAttack = true;
+            }, 500);
+        }
+    }
+
+    // #endregion
+}
+
+// #endregion
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AudioHub.html">AudioHub</a></li><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Cloud.html">Cloud</a></li><li><a href="Coin.html">Coin</a></li><li><a href="ConsumeableObject.html">ConsumeableObject</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Endbossbar.html">Endbossbar</a></li><li><a href="HpBar.html">HpBar</a></li><li><a href="ImageHub.html">ImageHub</a></li><li><a href="Intervalhub.html">Intervalhub</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MoveableObject.html">MoveableObject</a></li><li><a href="SalsaBottle.html">SalsaBottle</a></li><li><a href="Salsa_Bar.html">Salsa_Bar</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="Statusbar.html">Statusbar</a></li><li><a href="World.html">World</a></li><li><a href="coin_bar.html">coin_bar</a></li><li><a href="throwableSalsa.html">throwableSalsa</a></li></ul><h3>Global</h3><ul><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#keyboard">keyboard</a></li><li><a href="global.html#world">world</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Jun 09 2025 16:52:15 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

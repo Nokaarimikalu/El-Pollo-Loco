@@ -1,12 +1,34 @@
+// #region Global Variables
+
+/** @type {HTMLCanvasElement} */
 let canvas;
+
+/** @type {World} */
 let world;
+
+/** @type {Keyboard} */
 let keyboard = new Keyboard();
 
+// #endregion
+
+// #region Initialization
+
+/**
+ * Initialisiert das Spiel, indem das Canvas-Element abgefragt und
+ * eine neue Welt mit Tastatursteuerung erstellt wird.
+ */
 function init() {
     canvas = document.querySelector(`#canvas`);
     world = new World(canvas, keyboard);
 }
 
+// #endregion
+
+// #region Event Listeners: Keyboard Input
+
+/**
+ * Hört auf Tastendruck und setzt die entsprechenden Flags im Keyboard-Objekt.
+ */
 window.addEventListener("keydown", (event) => {
     if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
         keyboard.RIGHT = true;
@@ -28,6 +50,9 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
+/**
+ * Hört auf das Loslassen von Tasten und entfernt die entsprechenden Flags.
+ */
 window.addEventListener("keyup", (event) => {
     if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
         keyboard.RIGHT = false;
@@ -49,3 +74,5 @@ window.addEventListener("keyup", (event) => {
         world.sperre = true;
     }
 });
+
+// #endregion

@@ -1,9 +1,25 @@
+// #region class Endboss
+
+/**
+ * Repräsentiert den Endgegner im Spiel.
+ * Nutzt Animationen, Treffer- und Angriffszustände.
+ */
 class Endboss extends MoveableObject {
-    hp = 300;
+    // #region Properties
+
+    /** Lebenspunkte des Endgegners */
+    hp = 100;
+
+    /** Wurde der Endboss kürzlich getroffen? */
     isHit = false;
+
+    /** Darf der Endboss angreifen? */
     canAttack = true;
+
+    /** Führt der Endboss gerade einen Angriff aus? */
     isAttacking = false;
-    playerIsNear = false;
+
+    /** Offset-Werte zur Anpassung der Kollision */
     offset = {
         top: 70,
         right: 15,
@@ -11,24 +27,42 @@ class Endboss extends MoveableObject {
         left: 15,
     };
 
-    rx;
-    ry;
-    rw;
-    rh;
-
+    /** Höhe des Endbosses */
     height = 400;
+
+    /** Breite des Endbosses */
     width = 250;
+
+    /** Y-Position im Spiel */
     y = 40;
+
+    /** X-Position im Spiel (meist ganz rechts) */
     x = 2300;
+
+    // #endregion
+
+    /**
+     * Erstellt einen neuen Endboss und startet Animation + Kollisionsrahmenberechnung.
+     */
     constructor() {
         super();
         Intervalhub.startInterval(this.getRealFrame, 1000 / 60);
         Intervalhub.startInterval(() => this.animate(), 1000 / 5);
+        this.loadEndbossImages();
+    }
+
+    // #region Initialisierung
+
+    /**
+     * Lädt alle benötigten Bilder für den Endboss (Animationen & Zustände).
+     */
+    loadEndbossImages() {
         this.loadImage(ImageHub.chicken_boss.attack[0]);
         this.loadImage(ImageHub.chicken_boss.alert[0]);
         this.loadImage(ImageHub.chicken_boss.hurt[0]);
         this.loadImage(ImageHub.chicken_boss.dead[0]);
         this.loadImage(ImageHub.chicken_boss.walk[0]);
+
         this.loadImages(ImageHub.chicken_boss.alert);
         this.loadImages(ImageHub.chicken_boss.hurt);
         this.loadImages(ImageHub.chicken_boss.dead);
@@ -36,6 +70,13 @@ class Endboss extends MoveableObject {
         this.loadImages(ImageHub.chicken_boss.walk);
     }
 
+    // #endregion
+
+    // #region Animation & Verhalten
+
+    /**
+     * Wählt basierend auf dem Zustand die passende Animation.
+     */
     animate() {
         if (this.hp == 0) {
             this.playAnimation(ImageHub.chicken_boss.dead);
@@ -53,6 +94,13 @@ class Endboss extends MoveableObject {
         }
     }
 
+    // #endregion
+
+    // #region Angriff
+
+    /**
+     * Führt die Angriffsanimation durch und aktiviert Sperrzeiten.
+     */
     attackAnimation() {
         if (!this.isAttacking && this.canAttack) {
             this.isAttacking = true;
@@ -67,4 +115,8 @@ class Endboss extends MoveableObject {
             }, 500);
         }
     }
+
+    // #endregion
 }
+
+// #endregion

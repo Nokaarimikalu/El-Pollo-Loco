@@ -1,10 +1,37 @@
+// #region class Character
+
+/**
+ * Hauptcharakter des Spiels (Pepe), steuerbar mit der Tastatur.
+ * Reagiert auf Umgebung, Kollisionen und Benutzeraktionen.
+ */
 class Character extends MoveableObject {
+    // #region Properties
+
+    /** Startposition auf der X-Achse */
     x = 0;
+
+    /** Startposition auf der Y-Achse */
     y = 170;
+
+    /** Höhe des Charakters */
     height = 250;
+
+    /** Breite des Charakters */
     width = 150;
-    speed = 30.5;
+
+    /** Bewegungsgeschwindigkeit */
+    speed = 3.5;
+
+    /** Letzter Zeitpunkt der Inaktivität */
+    idleTime = new Date().getTime();
+
+    /** Referenz auf die Welt (World-Instanz) */
     world;
+
+    /** Schuetzt den Character von mulitplen collisions */
+    protection = false;
+
+    /** Kollisionsoffset */
     offset = {
         top: 110,
         right: 45,
@@ -12,12 +39,13 @@ class Character extends MoveableObject {
         left: 30,
     };
 
-    rx;
-    ry;
-    rw;
-    rh;
-    idleTime = new Date().getTime();
+    // #endregion
 
+    // #region Konstruktor
+
+    /**
+     * Erstellt eine neue Character-Instanz mit allen Animationen und startet Bewegung/Schwerkraft.
+     */
     constructor() {
         super();
         Intervalhub.startInterval(this.getRealFrame, 1000 / 60);
@@ -28,6 +56,13 @@ class Character extends MoveableObject {
         Intervalhub.startInterval(this.leftAndRightAnimation, 1000 / 60);
     }
 
+    // #endregion
+
+    // #region Methoden
+
+    /**
+     * Spielt die passende Animation je nach Zustand (laufen, springen, verletzt, tot, idle).
+     */
     animate = () => {
         if (this.isDead()) {
             this.playAnimation(ImageHub.mainCharacter.dead);
@@ -49,8 +84,11 @@ class Character extends MoveableObject {
         }
     };
 
+    /**
+     * Reagiert auf Tastendrücke (Bewegung nach links/rechts oder springen).
+     * Aktualisiert die Kamera-Position.
+     */
     leftAndRightAnimation = () => {
-        // wie schnell er sich bewegen tut
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
             this.otherDirection = false;
             this.moveRight();
@@ -65,6 +103,9 @@ class Character extends MoveableObject {
         this.world.camera_x = -this.x + 100;
     };
 
+    /**
+     * Lädt alle Animationsbilder für den Charakter.
+     */
     loadImagesFromMainChar() {
         this.loadImages(ImageHub.mainCharacter.walk);
         this.loadImages(ImageHub.mainCharacter.jump);
@@ -73,4 +114,8 @@ class Character extends MoveableObject {
         this.loadImages(ImageHub.mainCharacter.idle);
         this.loadImages(ImageHub.mainCharacter.long_idle);
     }
+
+    // #endregion
 }
+
+// #endregion

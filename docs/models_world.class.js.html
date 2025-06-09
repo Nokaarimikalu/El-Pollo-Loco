@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/world.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/world.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// #region class World
+
+/**
+ * Repräsentiert die Spielwelt mit Spiellogik, Rendering und Kollisionsprüfung.
+ */
+class World {
+    // #region Properties
+
+    /** @type {Character} Hauptfigur des Spiels */
+    character = new Character();
+
+    /** @type {Endboss} Der Endgegner */
+    endboss = new Endboss();
+
+    /** @type {HpBar} Lebensanzeige */
+    hp_bar = new HpBar();
+
+    /** @type {Salsa_Bar} Anzeige für Salsaflaschen */
+    salsa_bar = new Salsa_Bar();
+
+    /** @type {coin_bar} Anzeige für gesammelte Münzen */
+    coin_bar = new coin_bar();
+
+    /** @type {Endbossbar} Lebensanzeige des Endgegners */
+    boss_bar = new Endbossbar();
+
+    /** @type {Level} Aktuelles Level mit Umgebung und Gegnern */
+    level = new Level();
+
+    /** @type {HTMLCanvasElement} Zeichenfläche */
+    canvas;
+
+    /** @type {CanvasRenderingContext2D} Zeichenkontext */
+    ctx;
+
+    /** @type {Keyboard} Steuerung */
+    keyboard;
+
+    /** @type {number} X-Offset der Kamera */
+    camera_x = 0;
+
+    /** @type {Array&lt;throwableSalsa>} Alle aktuell geworfenen Objekte */
+    throwableObjects = [];
+
+    /** @type {boolean} Sperre für das Werfen */
+    sperre = true;
+
+    /** @type {boolean} Gibt an, ob der Endboss aktiv ist */
+    check = false;
+
+    // #endregion
+
+    /**
+     * Initialisiert die Welt mit Zeichenkontext und Steuerung.
+     * @param {HTMLCanvasElement} canvas - Das Canvas-Element.
+     * @param {Keyboard} keyboard - Das Tastatureingabeobjekt.
+     */
+    constructor(canvas, keyboard) {
+        this.ctx = canvas.getContext("2d");
+        this.canvas = canvas;
+        this.keyboard = keyboard;
+        this.draw();
+        this.setWorld();
+        Intervalhub.startInterval(this.checkCollision, 1000 / 60);
+        Intervalhub.startInterval(this.checkCollisionSalsa, 1000 / 60);
+        Intervalhub.startInterval(this.checkCollisionCoin, 1000 / 60);
+    }
+
+    // #region Setup &amp; Rendering
+
+    /** Zeichnet die gesamte Spielszene und HUD */
+    draw() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.translate(this.camera_x, 0);
+        this.drawLevelImages();
+        this.addToMap(this.character);
+        this.ctx.translate(-this.camera_x, 0);
+        this.drawHUD();
+        requestAnimationFrame(() => this.draw());
+    }
+
+    /** Verknüpft Objekte innerhalb der Welt */
+    setWorld() {
+        this.character.world = this;
+        this.endboss = this.level.enemies.find((e) => e instanceof Endboss);
+        this.endboss.world = this;
+    }
+
+    // #endregion
+
+    // #region Collision
+
+    /** Prüft allgemeine Kollisionen */
+    checkCollision = () => {
+        this.jumpCollision();
+        this.enemyToCharacterCollision();
+        this.checkThrowableObjects();
+        this.checkThrowableCollision();
+        this.walkingEndboss();
+    };
+
+    /** Kollisionen mit Salsa-Objekten */
+    checkCollisionSalsa = () => {
+        for (let i = this.level.salsa.length - 1; i >= 0; i--) {
+            const s = this.level.salsa[i];
+            if (this.salsa_bar.percentage !== 100 &amp;&amp; this.character.isColliding(s)) {
+                this.level.salsa.splice(i, 1);
+                this.salsa_bar.setPercentage(this.salsa_bar.percentage + 20);
+            }
+        }
+    };
+
+    /** Kollisionen mit Münzen */
+    checkCollisionCoin = () => {
+        for (let i = this.level.coins.length - 1; i >= 0; i--) {
+            const s = this.level.coins[i];
+            if (this.coin_bar.percentage !== 100 &amp;&amp; this.character.isColliding(s)) {
+                this.level.coins.splice(i, 1);
+                this.coin_bar.setPercentage(this.coin_bar.percentage + 6.25);
+            }
+        }
+    };
+
+    // #endregion
+
+    // #region Game Mechanics
+
+    /** Gegner von oben töten */
+    jumpCollision() {
+        for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+            const chicken = this.level.enemies[i];
+            if (!chicken.isDead &amp;&amp; this.character.isAboveGround() &amp;&amp; this.character.isColliding(chicken) &amp;&amp; this.character.speedY &lt; 0) {
+                chicken.isDead = true;
+                this.character.speedY = 15;
+                this.level.enemies.splice(i, 1);
+                this.level.deadEnemies.push(chicken);
+                setTimeout(() => {
+                    const index = this.level.deadEnemies.indexOf(chicken);
+                    if (index !== -1) this.level.deadEnemies.splice(index, 1);
+                }, 1000);
+            }
+        }
+    }
+
+    /** Seitliche Kollisionen mit Gegnern */
+    enemyToCharacterCollision() {
+        this.level.enemies.forEach((enemie) => {
+            if (enemie instanceof Endboss &amp;&amp; this.character.isColliding(enemie)) {
+                enemie.attackAnimation();
+                this.character.hit();
+                this.hp_bar.setPercentage(this.character.energy);
+            } else if (this.character.isColliding(enemie)) {
+                this.character.hit();
+                this.hp_bar.setPercentage(this.character.energy);
+            }
+        });
+    }
+
+    /** Werfen auslösen */
+    checkThrowableObjects() {
+        if (this.keyboard.C &amp;&amp; this.sperre &amp;&amp; this.salsa_bar.percentage !== 0) {
+            this.sperre = false;
+            this.generateNewThrowableSalsa();
+        }
+    }
+
+    /** Neue Flasche erzeugen */
+    generateNewThrowableSalsa() {
+        let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120);
+        this.throwableObjects.push(bottle);
+        this.salsa_bar.setPercentage(this.salsa_bar.percentage - 20);
+        setTimeout(() => {
+            const index = this.throwableObjects.indexOf(bottle);
+            if (index !== -1) this.throwableObjects.splice(index, 1);
+        }, 4000);
+    }
+
+    /** Kollision von Flaschen mit Gegnern */
+    checkThrowableCollision() {
+        this.throwableObjects.forEach((salsa) => {
+            for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+                const enemy = this.level.enemies[i];
+                if (!enemy.isHit &amp;&amp; (enemy instanceof Chicken || enemy instanceof SmallChicken) &amp;&amp; salsa.isColliding(enemy)) {
+                    enemy.hp -= 10;
+                    this.killNormalEnemies(enemy, salsa, i);
+                } else if (!enemy.isHit &amp;&amp; enemy instanceof Endboss &amp;&amp; salsa.isColliding(enemy) &amp;&amp; !salsa.gotHit) {
+                    enemy.hp -= 20;
+                    this.killNormalEnemies(enemy, salsa, i);
+                    this.boss_bar.setPercentage(enemy.hp);
+                }
+            }
+        });
+    }
+
+    /** Endboss läuft ein */
+    walkingEndboss() {
+        if (this.character.x > 1800) {
+            this.check = true;
+            this.addToMap(this.boss_bar);
+        }
+        if (this.check &amp;&amp; this.endboss.hp > 0 &amp;&amp; this.endboss.x > 300) {
+            this.endboss.x -= 3;
+        }
+    }
+
+    /** Gegner töten oder als verletzt markieren */
+    killNormalEnemies(enemy, salsa, index) {
+        enemy.isHit = true;
+        salsa.gotHit = true;
+        if (enemy.hp &lt;= 0) {
+            enemy.isDead = true;
+            this.level.enemies.splice(index, 1);
+            this.level.deadEnemies.push(enemy);
+            setTimeout(() => {
+                const idx = this.level.deadEnemies.indexOf(enemy);
+                if (idx !== -1) this.level.deadEnemies.splice(idx, 1);
+            }, 2000);
+        } else {
+            setTimeout(() => {
+                enemy.isHit = false;
+            }, 2000);
+        }
+    }
+
+    // #endregion
+
+    // #region Drawing
+
+    /** Zeichnet alle Objekte der Spielwelt */
+    drawLevelImages() {
+        this.addObjectsToMap(this.level.backgroundObjects);
+        this.addObjectsToMap(this.level.clouds);
+        this.addObjectsToMap(this.level.coins);
+        this.addObjectsToMap(this.level.salsa);
+        this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.level.deadEnemies);
+        this.addObjectsToMap(this.throwableObjects);
+    }
+
+    /** Zeichnet das HUD */
+    drawHUD() {
+        this.addToMap(this.hp_bar);
+        this.addToMap(this.salsa_bar);
+        this.addToMap(this.coin_bar);
+        if (this.check) {
+            this.addToMap(this.boss_bar);
+        }
+    }
+
+    /** Fügt eine Liste von Objekten zur Map hinzu */
+    addObjectsToMap(objects) {
+        objects.forEach((obj) => {
+            this.addToMap(obj);
+        });
+    }
+
+    /** Zeichnet ein Objekt mit evtl. Spiegelung */
+    addToMap(mo) {
+        if (mo.otherDirection) this.flipImage(mo);
+        mo.draw(this.ctx);
+        mo.drawFrameoffset(this.ctx);
+        if (mo.otherDirection) this.flipImageBack(mo);
+    }
+
+    /** Spiegelung aktivieren */
+    flipImage(mo) {
+        this.ctx.save();
+        this.ctx.translate(mo.width, 0);
+        this.ctx.scale(-1, 1);
+        mo.x = mo.x * -1;
+    }
+
+    /** Spiegelung rückgängig machen */
+    flipImageBack(mo) {
+        mo.x = mo.x * -1;
+        this.ctx.restore();
+    }
+
+    // #endregion
+}
+
+// #endregion
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AudioHub.html">AudioHub</a></li><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Cloud.html">Cloud</a></li><li><a href="Coin.html">Coin</a></li><li><a href="ConsumeableObject.html">ConsumeableObject</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Endbossbar.html">Endbossbar</a></li><li><a href="HpBar.html">HpBar</a></li><li><a href="ImageHub.html">ImageHub</a></li><li><a href="Intervalhub.html">Intervalhub</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MoveableObject.html">MoveableObject</a></li><li><a href="SalsaBottle.html">SalsaBottle</a></li><li><a href="Salsa_Bar.html">Salsa_Bar</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="Statusbar.html">Statusbar</a></li><li><a href="World.html">World</a></li><li><a href="coin_bar.html">coin_bar</a></li><li><a href="throwableSalsa.html">throwableSalsa</a></li></ul><h3>Global</h3><ul><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#keyboard">keyboard</a></li><li><a href="global.html#world">world</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Jun 09 2025 16:52:15 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

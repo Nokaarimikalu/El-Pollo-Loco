@@ -1,5 +1,15 @@
+// #region class throwableSalsa
+
+/**
+ * Repräsentiert ein geworfenes Salsa-Objekt, das sich bewegt und animiert ist.
+ */
 class throwableSalsa extends MoveableObject {
-    gothit = false;
+    // #region Properties
+
+    /** @type {boolean} Gibt an, ob das Objekt getroffen hat */
+    gotHit = false;
+
+    /** Offset-Werte zur Kollisionsanpassung */
     offset = {
         top: 10,
         right: 10,
@@ -7,13 +17,19 @@ class throwableSalsa extends MoveableObject {
         left: 10,
     };
 
-    rx;
-    ry;
-    rw;
-    rh;
+    /** Höhe des Objekts */
     height = 60;
+
+    /** Breite des Objekts */
     width = 50;
 
+    // #endregion
+
+    /**
+     * Erstellt ein neues Salsa-Wurfobjekt an Position x, y.
+     * @param {number} x - Startposition X
+     * @param {number} y - Startposition Y
+     */
     constructor(x, y) {
         super();
         this.loadImage(ImageHub.salsa.spinning_salsa[0]);
@@ -22,6 +38,13 @@ class throwableSalsa extends MoveableObject {
         this.throw(x, y);
     }
 
+    // #region Movement & Animation
+
+    /**
+     * Startet den Wurf und die Animation.
+     * @param {number} x - X-Startposition
+     * @param {number} y - Y-Startposition
+     */
     throw(x, y) {
         this.x = x;
         this.y = y;
@@ -32,10 +55,16 @@ class throwableSalsa extends MoveableObject {
         Intervalhub.startInterval(this.getRealFrame, 1000 / 60);
     }
 
+    /**
+     * Bewegt die Flasche nach rechts.
+     */
     flyingbottle = () => {
         this.x += 10;
     };
 
+    /**
+     * Simuliert Schwerkraft für die Flasche.
+     */
     applyGravitySalsa = () => {
         if (this.isAboveGround() || this.y > 0) {
             this.y -= this.speedY;
@@ -43,6 +72,9 @@ class throwableSalsa extends MoveableObject {
         }
     };
 
+    /**
+     * Zeigt die passende Animation (spinning oder splash).
+     */
     showImage = () => {
         Intervalhub.startInterval(() => this.playAnimation(ImageHub.salsa.spinning_salsa), 1000 / 30);
 
@@ -50,4 +82,8 @@ class throwableSalsa extends MoveableObject {
             Intervalhub.startInterval(() => this.playAnimation(ImageHub.salsa.salsa_splash), 1000 / 30);
         }
     };
+
+    // #endregion
 }
+
+// #endregion

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/moveable-object.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/moveable-object.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// #region class MoveableObject
+
+/**
+ * Basisklasse für bewegliche Objekte im Spiel.
+ * Beinhaltet Schwerkraft, Kollision, Bewegung und Zustandsabfragen.
+ */
+class MoveableObject extends DrawableObject {
+    // #region Properties
+
+    /** Bewegungsgeschwindigkeit (horizontal) */
+    speed = 0.15;
+
+    /** Gibt an, ob das Objekt gespiegelt (nach links schauend) ist */
+    otherDirection = false;
+
+    /** Vertikale Geschwindigkeit (z. B. beim Springen) */
+    speedY = 0;
+
+    /** Beschleunigung nach unten (Schwerkraft) */
+    acceleration = 2.5;
+
+    /** Lebenspunkte oder Energie des Objekts */
+    energy = 100;
+
+    /** Zeitstempel des letzten Treffers */
+    lastHit = 0;
+
+    /** Zeitpunkt der letzten Aktivität (z. B. Bewegung) */
+    lastAction = new Date().getTime();
+
+    /** Kollisionsrahmen: real x/y/width/height */
+    rx;
+    ry;
+    rw;
+    rh;
+
+    // #endregion
+
+    // #region Movement &amp; Gravity
+
+    /**
+     * Wendet Schwerkraft an, wenn Objekt nicht auf dem Boden ist.
+     */
+    applyGravity = () => {
+        if (this.isAboveGround() || this.speedY > 0) {
+            this.y -= this.speedY;
+            this.speedY -= this.acceleration;
+        }
+    };
+
+    /**
+     * Springt nach oben.
+     */
+    jump = () => {
+        this.speedY = 30;
+    };
+
+    /**
+     * Bewegt das Objekt nach rechts.
+     */
+    moveRight = () => {
+        this.x += this.speed;
+    };
+
+    /**
+     * Bewegt das Objekt nach links.
+     */
+    moveLeft = () => {
+        this.x -= this.speed;
+    };
+
+    // #endregion
+
+    // #region Collision &amp; Position
+
+    /**
+     * Gibt zurück, ob sich das Objekt über dem Boden befindet.
+     * @returns {boolean}
+     */
+    isAboveGround() {
+        return this.y &lt; 170;
+    }
+
+    /**
+     * Prüft, ob dieses Objekt mit einem anderen kollidiert.
+     * @param {MoveableObject} mo - Ein anderes bewegliches Objekt
+     * @returns {boolean}
+     */
+    isColliding(mo) {
+        return this.rx + this.rw > mo.rx &amp;&amp; this.ry + this.rh > mo.ry &amp;&amp; this.rx &lt; mo.rx + mo.rw &amp;&amp; this.ry &lt; mo.ry + mo.rh;
+    }
+
+    /**
+     * Berechnet den realen Kollisionsrahmen.
+     */
+    getRealFrame = () => {
+        this.rx = this.x + this.offset.left;
+        this.ry = this.y + this.offset.top;
+        this.rw = this.width - this.offset.left - this.offset.right;
+        this.rh = this.height - this.offset.top - this.offset.bottom;
+    };
+
+    // #endregion
+
+    // #region Animation
+
+    /**
+     * Spielt eine Frame-basierte Animation ab.
+     * @param {string[]} images - Array von Bildpfaden
+     */
+    playAnimation(images) {
+        let i = this.currentImage % images.length;
+        let path = images[i];
+        this.img = this.ImageCache[path];
+        this.currentImage++;
+    }
+
+    // #endregion
+
+    // #region Zustand / Energie / Aktionen
+
+    /**
+     * Verursacht Schaden und speichert den Zeitpunkt.
+     */
+    hit() {
+        this.energy -= 0.5;
+        if (this.energy &lt; 0) {
+            this.energy = 0;
+        } else {
+            this.lastHit = new Date().getTime();
+        }
+    }
+
+    /**
+     * Prüft, ob das Objekt keine Energie mehr hat.
+     * @returns {boolean}
+     */
+    isDead() {
+        return this.energy == 0;
+    }
+
+    /**
+     * Gibt an, ob kürzlich Schaden erlitten wurde (für Animation).
+     * @returns {boolean}
+     */
+    isHurtAnimation() {
+        let timepassed = (new Date().getTime() - this.lastHit) / 1000;
+        return timepassed &lt; 0.5;
+    }
+
+    /**
+     * Aktualisiert den Zeitstempel der letzten Aktion.
+     */
+    updateActivity() {
+        this.lastAction = new Date().getTime();
+    }
+
+    /**
+     * Prüft, ob das Objekt länger als 3 Sekunden untätig war.
+     * @returns {boolean}
+     */
+    isLongIdle() {
+        let timePassed = (new Date().getTime() - this.lastAction) / 1000;
+        return timePassed > 3;
+    }
+
+    // #endregion
+}
+
+// #endregion
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AudioHub.html">AudioHub</a></li><li><a href="BackgroundObject.html">BackgroundObject</a></li><li><a href="Character.html">Character</a></li><li><a href="Chicken.html">Chicken</a></li><li><a href="Cloud.html">Cloud</a></li><li><a href="Coin.html">Coin</a></li><li><a href="ConsumeableObject.html">ConsumeableObject</a></li><li><a href="DrawableObject.html">DrawableObject</a></li><li><a href="Endboss.html">Endboss</a></li><li><a href="Endbossbar.html">Endbossbar</a></li><li><a href="HpBar.html">HpBar</a></li><li><a href="ImageHub.html">ImageHub</a></li><li><a href="Intervalhub.html">Intervalhub</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Level.html">Level</a></li><li><a href="MoveableObject.html">MoveableObject</a></li><li><a href="SalsaBottle.html">SalsaBottle</a></li><li><a href="Salsa_Bar.html">Salsa_Bar</a></li><li><a href="SmallChicken.html">SmallChicken</a></li><li><a href="Statusbar.html">Statusbar</a></li><li><a href="World.html">World</a></li><li><a href="coin_bar.html">coin_bar</a></li><li><a href="throwableSalsa.html">throwableSalsa</a></li></ul><h3>Global</h3><ul><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#keyboard">keyboard</a></li><li><a href="global.html#world">world</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Mon Jun 09 2025 16:52:15 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
