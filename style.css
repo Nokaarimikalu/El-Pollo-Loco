@@ -176,7 +176,7 @@ canvas {
 .loosing-area .uLost,
 .winning-area .uWon {
     position: absolute;
-    top: 40%;
+    top: 10%;
     left: 50%;
     transform: translate(-50%);
     width: 50%;
@@ -193,6 +193,7 @@ canvas {
 .end-button-w {
     position: absolute;
     top: 20px;
+    z-index: 100;
     padding: 12px 24px;
     font-size: 20px;
     border-radius: 15px;
