@@ -39,6 +39,8 @@ class Endboss extends MoveableObject {
     /** X-Position im Spiel (meist ganz rechts) */
     x = 2300;
 
+    hurtTimeoutRunning = false;
+
     // #endregion
 
     /**
@@ -78,13 +80,17 @@ class Endboss extends MoveableObject {
      * Wählt basierend auf dem Zustand die passende Animation.
      */
     animate() {
-        if (this.hp == 0) {
+        if (this.hp <= 0) {
             this.playAnimation(ImageHub.chicken_boss.dead);
         } else if (this.isHit) {
-            this.playAnimation(ImageHub.chicken_boss.hurt);
-            setTimeout(() => {
-                this.isHit = false;
-            }, 300);
+            if (!this.hurtTimeoutRunning) {
+                this.playAnimation(ImageHub.chicken_boss.hurt);
+                this.hurtTimeoutRunning = true;
+                setTimeout(() => {
+                    this.isHit = false;
+                    this.hurtTimeoutRunning = false;
+                }, 300);
+            }
         } else if (this.isAttacking) {
             this.playAnimation(ImageHub.chicken_boss.attack);
         } else if (this.playerIsNear) {

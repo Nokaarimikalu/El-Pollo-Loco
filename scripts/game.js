@@ -17,9 +17,26 @@ let keyboard = new Keyboard();
  * Initialisiert das Spiel, indem das Canvas-Element abgefragt und
  * eine neue Welt mit Tastatursteuerung erstellt wird.
  */
-function init() {
+function startGame() {
     canvas = document.querySelector(`#canvas`);
     world = new World(canvas, keyboard);
+    document.querySelector(".start-area").classList.add("d_none");
+    document.querySelector(".Keybinds").classList.add("d_none");
+}
+
+function startAgain() {
+    Intervalhub.stopAllintervals();
+    canvas = document.querySelector(`#canvas`);
+    world = new World(canvas, keyboard);
+    document.querySelector(".loosing-area").classList.add("d_none");
+}
+
+function endGame() {
+    Intervalhub.stopAllintervals();
+    document.querySelector(".loosing-area").classList.add("d_none");
+    document.querySelector(".winning-area").classList.add("d_none");
+    document.querySelector(".start-area").classList.remove("d_none");
+    document.querySelector(".Keybinds").classList.remove("d_none");
 }
 
 // #endregion

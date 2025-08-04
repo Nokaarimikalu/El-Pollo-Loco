@@ -28,6 +28,8 @@ class MoveableObject extends DrawableObject {
     /** Zeitpunkt der letzten Aktivität (z. B. Bewegung) */
     lastAction = new Date().getTime();
 
+    chickenIsDead = false;
+
     /** Kollisionsrahmen: real x/y/width/height */
     rx;
     ry;
@@ -66,6 +68,10 @@ class MoveableObject extends DrawableObject {
      * Bewegt das Objekt nach links.
      */
     moveLeft = () => {
+        if (this.chickenIsDead) {
+            return;
+        }
+
         this.x -= this.speed;
     };
 

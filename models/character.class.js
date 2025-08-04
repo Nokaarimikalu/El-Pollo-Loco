@@ -29,7 +29,7 @@ class Character extends MoveableObject {
     world;
 
     /** Schuetzt den Character von mulitplen collisions */
-    protection = false;
+    protection = false; //klappt nicht /:
 
     /** Kollisionsoffset */
     offset = {

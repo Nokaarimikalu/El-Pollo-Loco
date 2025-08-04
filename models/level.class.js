@@ -7,7 +7,7 @@ class Level {
     // #region Properties
 
     /** X-Position, an der das Level endet */
-    level_end_x = 3000;
+    level_end_x = 2200;
 
     /** Besiegte Gegner, die für Animationen o.Ä. zwischengespeichert werden */
     deadEnemies = [];

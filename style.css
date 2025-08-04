@@ -1,20 +1,146 @@
 * {
-    padding: 0;
     margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    position: relative;
 }
 
-div {
-    height: 100dvh;
-    width: 100%;
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background-image: url("img/5_background/wild-west-cartoon-illustration-cacti-600nw-1369788461.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: sans-serif;
     display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
+}
+
+.canvas-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 480px;
+    width: 720px;
+    z-index: 10;
 }
 
 canvas {
     background-color: black;
+    border: 2px solid #333;
+    display: block;
 }
-/* @media (orientation: portrait) -> für wenn das Handy im vertikalen Modus ist ;) (CSS) */
+
+/* Startbildschirm */
+.start-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 480px;
+    width: 720px;
+    z-index: 10;
+}
+
+.start-area img {
+    height: 100%;
+    width: 100%;
+}
+
+.startbutton {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    font-size: 20px;
+    border-radius: 15px;
+    background-color: #ffc800;
+    border: 2px solid #ffc800;
+    cursor: pointer;
+}
+
+.startbutton:hover {
+    padding: 14px 28px;
+}
+
+/* Game Over / Win */
+.loosing-area,
+.winning-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 480px;
+    width: 720px;
+    z-index: 10;
+}
+
+.loosing-area .uLost,
+.winning-area .uWon {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%);
+    height: 60%;
+    width: 50%;
+    z-index: 10;
+}
+
+.background {
+    height: 100%;
+    width: 100%;
+}
+
+.restart-button,
+.end-button,
+.end-button-w {
+    position: absolute;
+    top: 20px;
+    padding: 12px 24px;
+    font-size: 20px;
+    border-radius: 15px;
+    background-color: #ffc800;
+    border: 2px solid #ffc800;
+    cursor: pointer;
+}
+
+.restart-button {
+    left: 20%;
+}
+.end-button {
+    left: 60%;
+}
+.end-button-w {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Keybinds unter dem Canvas */
+.Keybinds {
+    position: absolute;
+    text-align: center;
+    bottom: 10dvh;
+    z-index: 200;
+    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.d_none {
+    display: none;
+}

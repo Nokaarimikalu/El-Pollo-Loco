@@ -10,9 +10,6 @@ class Chicken extends MoveableObject {
     /** Lebenspunkte */
     hp = 10;
 
-    /** Ob das Huhn tot ist */
-    isDead = false;
-
     /** Ob das Huhn aktuell getroffen wurde */
     isHit = false;
 
@@ -37,8 +34,11 @@ class Chicken extends MoveableObject {
         this.loadImages(ImageHub.chicken_normal.walk);
         this.loadImage(ImageHub.chicken_normal.walk[0]);
         this.x = 300 + Math.random() * 1000;
-        this.speed = 0.3 + Math.random() * 1; // <- DEBUG ONLY
+        this.speed = 0.3 + Math.random() * 1;
         Intervalhub.startInterval(this.animate, 1000 / 5);
+        if (this.hp > 0) {
+            Intervalhub.startInterval(this.moveLeft, 1000 / 60);
+        }
     }
 
     // #endregion
@@ -49,7 +49,7 @@ class Chicken extends MoveableObject {
      * Führt die Geh-Animation oder das Todesbild aus.
      */
     animate = () => {
-        if (!this.isDead) {
+        if (!this.chickenIsDead) {
             this.playAnimation(ImageHub.chicken_normal.walk);
         } else {
             this.loadImage(ImageHub.chicken_normal.dead[0]);
@@ -82,9 +82,6 @@ class SmallChicken extends MoveableObject {
     /** Ob das Huhn aktuell getroffen wurde */
     isHit = false;
 
-    /** Ob das Huhn tot ist */
-    isDead = false;
-
     /** Kollisionsoffset */
     offset = {
         top: 5,
@@ -106,8 +103,11 @@ class SmallChicken extends MoveableObject {
         this.loadImages(ImageHub.chicken_small.walk);
         this.loadImage(ImageHub.chicken_small.walk[0]);
         this.x = 300 + Math.random() * 1000;
-        this.speed = 0.3 + Math.random() * 1; // <- DEBUG ONLY
+        this.speed = 0.3 + Math.random() * 1;
         Intervalhub.startInterval(this.animate, 1000 / 5);
+        if (this.hp > 0) {
+            Intervalhub.startInterval(this.moveLeft, 1000 / 60);
+        }
     }
 
     // #endregion
@@ -118,7 +118,7 @@ class SmallChicken extends MoveableObject {
      * Führt die Geh-Animation oder das Todesbild aus.
      */
     animate = () => {
-        if (!this.isDead) {
+        if (!this.chickenIsDead) {
             this.playAnimation(ImageHub.chicken_small.walk);
         } else {
             this.loadImage(ImageHub.chicken_small.dead[0]);

@@ -234,6 +234,18 @@ class AudioHub {
         bottle: ["sounds/collectibles/bottleCollectSound.wav"],
         coin: ["sounds/collectibles/collectSound.wav"],
     };
+
+    static endboss = {
+        approachEndboss: ["sounds/endboss/endbossApproach.wav"],
+    };
+
+    static gameStart = {
+        game: ["sounds/game/gameStart.mp3"],
+    };
+
+    static throwableSound = {
+        bottleBreak: ["sounds/throwable/bottleBreak.mp3"],
+    };
 }
 
 // #endregion

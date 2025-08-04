@@ -95,6 +95,8 @@ class World {
         setTimeout(() => {
             this.character.protection = false;
         }, 200);
+        this.gameOver();
+        this.gameWon();
     };
 
     checkCollisionSalsa = () => {
@@ -122,8 +124,8 @@ class World {
     jumpCollision() {
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
             const chicken = this.level.enemies[i];
-            if (!chicken.isDead && this.character.isAboveGround() && this.character.isColliding(chicken) && this.character.speedY < 0) {
-                chicken.isDead = true;
+            if (!chicken.chickenIsDead && this.character.isAboveGround() && this.character.isColliding(chicken) && this.character.speedY < 0) {
+                chicken.chickenIsDead = true;
                 this.character.speedY = 15;
                 this.character.protection = true;
                 this.level.enemies.splice(i, 1);
@@ -192,6 +194,10 @@ class World {
         }
         if (this.check && boss.hp > 0 && boss.x > 300) {
             boss.x -= 3;
+            boss.playerIsNear = true;
+        }
+        if (boss.hp <= 0 || boss.x <= 300) {
+            boss.playerIsNear = false;
         }
     }
 
@@ -199,7 +205,7 @@ class World {
         enemy.isHit = true;
         salsa.gotHit = true;
         if (enemy.hp <= 0) {
-            enemy.isDead = true;
+            enemy.chickenIsDead = true;
             this.level.enemies.splice(index, 1);
             this.level.deadEnemies.push(enemy);
             setTimeout(() => {
@@ -243,7 +249,7 @@ class World {
     addToMap(mo) {
         if (mo.otherDirection) this.flipImage(mo);
         mo.draw(this.ctx);
-        mo.drawFrameoffset(this.ctx);
+        // mo.drawFrameoffset(this.ctx);
         if (mo.otherDirection) this.flipImageBack(mo);
     }
 
@@ -257,6 +263,22 @@ class World {
     flipImageBack(mo) {
         mo.x = mo.x * -1;
         this.ctx.restore();
+    }
+
+    gameOver() {
+        if (this.character.energy == 0) {
+            Intervalhub.stopAllintervals();
+            document.querySelector(".loosing-area").classList.remove("d_none");
+        }
+    }
+
+    gameWon() {
+        if (this.level.endboss.hp == 0) {
+            setTimeout(() => {
+                Intervalhub.stopAllintervals();
+                document.querySelector(".winning-area").classList.remove("d_none");
+            }, 2000);
+        }
     }
 
     // #endregion
