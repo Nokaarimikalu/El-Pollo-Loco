@@ -37,8 +37,23 @@
             <div class="rotate-text">Bitte drehe dein Gerät</div>
             <div>Für das beste Spielerlebnis spiele im Querformat</div>
         </div>
+
         
         <main>
+            <!-- Audio Controls -->
+            <div class="audio-controls">
+                <!-- Desktop Volume Slider -->
+                <div class="volume-control desktop-only">
+                    <input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider">
+                    <span class="volume-label">🔊</span>
+                </div>
+                
+                <!-- Mobile Mute/Loud Toggle -->
+                <button class="audio-toggle mobile-only" id="audioToggle">
+                    <span id="audioIcon">🔊</span>
+                </button>
+            </div>
+
             <!-- Mobile Controls -->
             <div class="mobile-controls ">
                 <div class="controls-left">

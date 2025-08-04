@@ -82,6 +82,38 @@ class World {
         this.level.endboss.world = this;
     }
 
+    /**
+     * Spielt einen Sound ab und fügt ihn zur Audio-Kontrolle hinzu
+     * @param {string} audioPath - Pfad zur Audio-Datei
+     */
+    playSound(audioPath) {
+        if (audioPath) {
+            const audio = AudioHub.createAudio(audioPath);
+            
+            // Aktuelle Lautstärke anwenden (aus game.js)
+            if (typeof currentVolume !== 'undefined' && typeof isMuted !== 'undefined') {
+                audio.volume = isMuted ? 0 : (currentVolume / 100);
+            }
+            
+            // Audio zur Kontrolle hinzufügen (aus game.js)
+            if (typeof allAudioObjects !== 'undefined') {
+                allAudioObjects.push(audio);
+            }
+            
+            audio.play().catch(error => {
+                
+            });
+        }
+    }
+
+    chickenSound(enemy){
+        if (enemy instanceof SmallChicken) {
+            this.playSound(AudioHub.chicken.dead_small[0]);
+        } else {
+            this.playSound(AudioHub.chicken.dead[0]);
+        }
+    }
+
     // #endregion
 
     // #region Collision
@@ -105,6 +137,7 @@ class World {
             if (this.salsa_bar.percentage !== 100 && this.character.isColliding(s)) {
                 this.level.salsa.splice(i, 1);
                 this.salsa_bar.setPercentage(this.salsa_bar.percentage + 20);
+                this.playSound(AudioHub.collectibles.bottle[0]);
             }
         }
     };
@@ -115,6 +148,7 @@ class World {
             if (this.coin_bar.percentage !== 100 && this.character.isColliding(s)) {
                 this.level.coins.splice(i, 1);
                 this.coin_bar.setPercentage(this.coin_bar.percentage + 6.25);
+                this.playSound(AudioHub.collectibles.coin[0]);
             }
         }
     };
@@ -130,6 +164,7 @@ class World {
                 this.character.protection = true;
                 this.level.enemies.splice(i, 1);
                 this.level.deadEnemies.push(chicken);
+                this.playSound(AudioHub.chicken.dead[0]);
                 setTimeout(() => {
                     const index = this.level.deadEnemies.indexOf(chicken);
                     if (index !== -1) this.level.deadEnemies.splice(index, 1);
@@ -189,6 +224,10 @@ class World {
     walkingEndboss() {
         const boss = this.level.endboss;
         if (this.character.x > 1800) {
+            // Endboss aktivieren und Sound nur beim ersten Mal abspielen
+            if (!this.check) {
+                this.playSound(AudioHub.endboss.approachEndboss[0]);
+            }
             this.check = true;
             this.addToMap(this.boss_bar);
         }
@@ -208,6 +247,7 @@ class World {
             enemy.chickenIsDead = true;
             this.level.enemies.splice(index, 1);
             this.level.deadEnemies.push(enemy);
+            this.chickenSound(this.enemy)
             setTimeout(() => {
                 const idx = this.level.deadEnemies.indexOf(enemy);
                 if (idx !== -1) this.level.deadEnemies.splice(idx, 1);
@@ -267,6 +307,14 @@ class World {
 
     gameOver() {
         if (this.character.energy == 0) {
+            // Alle Sounds stoppen
+            window.stopAllSounds();
+            
+            // Game Over Sound abspielen
+            setTimeout(() => {
+                this.playSound(AudioHub.gameEnd.gameOver[0]);
+            }, 100);
+            
             Intervalhub.stopAllintervals();
             document.querySelector(".loosing-area").classList.remove("d_none");
         }
@@ -274,6 +322,14 @@ class World {
 
     gameWon() {
         if (this.level.endboss.hp == 0) {
+            // Alle Sounds stoppen
+            window.stopAllSounds();
+            
+            // Victory Sound abspielen
+            setTimeout(() => {
+                this.playSound(AudioHub.gameEnd.victory[0]);
+            }, 100);
+            
             setTimeout(() => {
                 Intervalhub.stopAllintervals();
                 document.querySelector(".winning-area").classList.remove("d_none");

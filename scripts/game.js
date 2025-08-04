@@ -9,6 +9,18 @@ let world;
 /** @type {Keyboard} */
 let keyboard = new Keyboard();
 
+/** @type {number} */
+let currentVolume = 50;
+
+/** @type {boolean}  */
+let isMuted = false;
+
+/** @type {Audio} Hintergrundmusik */
+let backgroundMusic = null;
+
+/** @type {Array<Audio>} Alle Audio-Objekte für Lautstärke-Kontrolle */
+let allAudioObjects = [];
+
 // #endregion
 
 // #region Initialization
@@ -24,6 +36,9 @@ function startGame() {
     document.querySelector(".Keybinds").classList.add("d_none");
     // Mobile Controls anzeigen
     document.querySelector(".mobile-controls").classList.add("show");
+    
+    // Hintergrundmusik starten
+    startBackgroundMusic();
 }
 
 function startAgain() {
@@ -33,6 +48,9 @@ function startAgain() {
     document.querySelector(".loosing-area").classList.add("d_none");
     // Mobile Controls anzeigen
     document.querySelector(".mobile-controls").classList.add("show");
+    
+    // Hintergrundmusik wieder starten
+    startBackgroundMusic();
 }
 
 function endGame() {
@@ -43,6 +61,78 @@ function endGame() {
     document.querySelector(".Keybinds").classList.remove("d_none");
     // Mobile Controls verstecken
     document.querySelector(".mobile-controls").classList.remove("show");
+    
+    // Hintergrundmusik stoppen
+    stopBackgroundMusic();
+}
+
+// #endregion
+
+// #region Audio Management
+
+/**
+ * Startet die Hintergrundmusik
+ */
+function startBackgroundMusic() {
+    if (!backgroundMusic) {
+        backgroundMusic = AudioHub.createBackgroundMusic(AudioHub.backgroundMusic.main[0]);
+        allAudioObjects.push(backgroundMusic);
+        
+        // Aktuelle Lautstärke anwenden
+        backgroundMusic.volume = isMuted ? 0 : (currentVolume / 100) * 0.5;
+    }
+    
+    backgroundMusic.currentTime = 0; // Von Anfang starten
+    backgroundMusic.play().catch(error => {
+        console.log("Hintergrundmusik konnte nicht gestartet werden:", error);
+    });
+}
+
+/**
+ * Stoppt die Hintergrundmusik
+ */
+function stopBackgroundMusic() {
+    if (backgroundMusic) {
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+    }
+}
+
+/**
+ * Stoppt alle laufenden Sounds (Hintergrundmusik und Effekte)
+ */
+function stopAllSounds() {
+    // Hintergrundmusik stoppen
+    stopBackgroundMusic();
+    
+    // Alle anderen Audio-Objekte stoppen
+    allAudioObjects.forEach(audio => {
+        if (audio && !audio.paused) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    });
+}
+
+// Global verfügbar machen
+window.stopAllSounds = stopAllSounds;
+
+/**
+ * Setzt die Lautstärke aller Spiel-Sounds
+ * @param {number} volume - Lautstärke zwischen 0 und 1
+ */
+function setGameVolume(volume) {
+    // Hintergrundmusik
+    if (backgroundMusic) {
+        backgroundMusic.volume = volume * 0.5; // Hintergrundmusik etwas leiser
+    }
+    
+    // Alle anderen Audio-Objekte
+    allAudioObjects.forEach(audio => {
+        if (audio !== backgroundMusic) {
+            audio.volume = volume;
+        }
+    });
 }
 
 // #endregion
@@ -184,6 +274,60 @@ function initMobileControls() {
 }
 
 // Touch-Controls nach DOM-Load initialisieren
-document.addEventListener('DOMContentLoaded', initMobileControls);
+document.addEventListener('DOMContentLoaded', () => {
+    initMobileControls();
+    initAudioControls();
+});
+
+// #endregion
+
+// #region Audio Controls
+
+/**
+ * Initialisiert die Audio-Controls für Desktop und Mobile
+ */
+function initAudioControls() {
+    const volumeSlider = document.getElementById('volumeSlider');
+    const audioToggle = document.getElementById('audioToggle');
+    const audioIcon = document.getElementById('audioIcon');
+
+    // Desktop Volume Slider
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', (e) => {
+            currentVolume = e.target.value;
+            setGameVolume(currentVolume / 100);
+            
+            // Update mobile button state
+            if (currentVolume == 0) {
+                isMuted = true;
+                audioIcon.textContent = '🔇';
+                audioToggle.classList.add('muted');
+            } else {
+                isMuted = false;
+                audioIcon.textContent = '🔊';
+                audioToggle.classList.remove('muted');
+            }
+        });
+    }
+
+    if (audioToggle) {
+        audioToggle.addEventListener('click', () => {
+            isMuted = !isMuted;
+            
+            if (isMuted) {
+                audioIcon.textContent = '🔇';
+                audioToggle.classList.add('muted');
+                setGameVolume(0);
+                volumeSlider.value = 0;
+            } else {
+                audioIcon.textContent = '🔊';
+                audioToggle.classList.remove('muted');
+                setGameVolume(currentVolume / 100);
+                volumeSlider.value = currentVolume;
+            }
+        });
+    }
+}
+
 
 // #endregion

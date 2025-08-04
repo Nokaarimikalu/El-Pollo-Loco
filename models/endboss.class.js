@@ -41,6 +41,14 @@ class Endboss extends MoveableObject {
 
     hurtTimeoutRunning = false;
 
+    /** Sound-Cooldowns für Endboss Sounds */
+    soundCooldowns = {
+        hurt: false,
+        attack: false,
+        dead: false,
+        approach: false
+    };
+
     // #endregion
 
     /**
@@ -77,26 +85,90 @@ class Endboss extends MoveableObject {
     // #region Animation & Verhalten
 
     /**
-     * Wählt basierend auf dem Zustand die passende Animation.
+     * Wählt basierend auf dem Zustand die passende Animation und spielt Sounds ab.
      */
     animate() {
         if (this.hp <= 0) {
-            this.playAnimation(ImageHub.chicken_boss.dead);
+            this.handleDeadAnimation();
         } else if (this.isHit) {
-            if (!this.hurtTimeoutRunning) {
-                this.playAnimation(ImageHub.chicken_boss.hurt);
-                this.hurtTimeoutRunning = true;
-                setTimeout(() => {
-                    this.isHit = false;
-                    this.hurtTimeoutRunning = false;
-                }, 300);
-            }
+            this.handleHurtAnimation();
         } else if (this.isAttacking) {
-            this.playAnimation(ImageHub.chicken_boss.attack);
+            this.handleAttackAnimation();
         } else if (this.playerIsNear) {
-            this.playAnimation(ImageHub.chicken_boss.walk);
+            this.handleWalkAnimation();
         } else {
-            this.playAnimation(ImageHub.chicken_boss.alert);
+            this.handleAlertAnimation();
+        }
+    }
+
+    /**
+     * Behandelt die Tod-Animation und den zugehörigen Sound
+     */
+    handleDeadAnimation() {
+        this.playAnimation(ImageHub.chicken_boss.dead);
+        if (!this.soundCooldowns.dead) {
+            this.playEndbossSound(AudioHub.endboss.dead[0]);
+            this.soundCooldowns.dead = true;
+        }
+    }
+
+    /**
+     * Behandelt die Verletzungs-Animation und den zugehörigen Sound
+     */
+    handleHurtAnimation() {
+        if (!this.hurtTimeoutRunning) {
+            this.playAnimation(ImageHub.chicken_boss.hurt);
+            this.hurtTimeoutRunning = true;
+            
+            // Hurt Sound
+            if (!this.soundCooldowns.hurt) {
+                this.playEndbossSound(AudioHub.endboss.hurt[0]);
+                this.soundCooldowns.hurt = true;
+                setTimeout(() => {
+                    this.soundCooldowns.hurt = false;
+                }, 1000);
+            }
+            
+            setTimeout(() => {
+                this.isHit = false;
+                this.hurtTimeoutRunning = false;
+            }, 300);
+        }
+    }
+
+    /**
+     * Behandelt die Angriffs-Animation
+     */
+    handleAttackAnimation() {
+        this.playAnimation(ImageHub.chicken_boss.attack);
+    }
+
+    /**
+     * Behandelt die Lauf-Animation
+     */
+    handleWalkAnimation() {
+        this.playAnimation(ImageHub.chicken_boss.walk);
+    }
+
+    /**
+     * Behandelt die Alert-Animation
+     */
+    handleAlertAnimation() {
+        this.playAnimation(ImageHub.chicken_boss.alert);
+    }
+
+    // #endregion
+
+    // #region Sound Management
+
+    /**
+     * Spielt Endboss Sounds ab (verwendet das World Sound System)
+     * @param {string} soundPath - Pfad zur Sound-Datei
+     */
+    playEndbossSound(soundPath) {
+        // Sound über das globale World-System abspielen
+        if (world && world.playSound) {
+            world.playSound(soundPath);
         }
     }
 
@@ -111,6 +183,15 @@ class Endboss extends MoveableObject {
         if (!this.isAttacking && this.canAttack) {
             this.isAttacking = true;
             this.canAttack = false;
+
+            // Attack Sound
+            if (!this.soundCooldowns.attack) {
+                this.playEndbossSound(AudioHub.endboss.attack[0]);
+                this.soundCooldowns.attack = true;
+                setTimeout(() => {
+                    this.soundCooldowns.attack = false;
+                }, 1000);
+            }
 
             setTimeout(() => {
                 this.isAttacking = false;

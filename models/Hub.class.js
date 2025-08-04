@@ -237,15 +237,49 @@ class AudioHub {
 
     static endboss = {
         approachEndboss: ["sounds/endboss/endbossApproach.wav"],
+        attack: ["sounds/endboss/endbossApproach.wav"], // Verwende approach als attack sound
+        hurt: ["sounds/chicken/chickenDead.mp3"], // Verwende chicken sound für hurt
+        dead: ["sounds/chicken/chickenDead.mp3"], // Verwende chicken sound für dead
     };
 
     static gameStart = {
         game: ["sounds/game/gameStart.mp3"],
     };
 
+    static gameEnd = {
+        victory: ["sounds/11l-victory-1749704550711-358777.mp3"], 
+        gameOver: ["sounds/8-bit-game-over-sound-effect-331435.mp3"], 
+    };
+
+    static backgroundMusic = {
+        main: ["sounds/western-theme-162884.mp3"], 
+    };
+
     static throwableSound = {
         bottleBreak: ["sounds/throwable/bottleBreak.mp3"],
     };
+
+    /**
+     * Erstellt ein Audio-Objekt für den gegebenen Pfad
+     * @param {string} audioPath - Pfad zur Audio-Datei
+     * @returns {Audio} Audio-Objekt
+     */
+    static createAudio(audioPath) {
+        const audio = new Audio(audioPath);
+        return audio;
+    }
+
+    /**
+     * Erstellt ein Audio-Objekt für Hintergrundmusik (Loop)
+     * @param {string} audioPath - Pfad zur Audio-Datei
+     * @returns {Audio} Audio-Objekt mit Loop
+     */
+    static createBackgroundMusic(audioPath) {
+        const audio = new Audio(audioPath);
+        audio.loop = true;
+        audio.volume = 0.5; // Standard-Lautstärke
+        return audio;
+    }
 }
 
 // #endregion

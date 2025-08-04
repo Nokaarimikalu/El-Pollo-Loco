@@ -31,6 +31,17 @@ class Character extends MoveableObject {
     /** Schuetzt den Character von mulitplen collisions */
     protection = false; //klappt nicht /:
 
+    /** Sound-Cooldown für Character Sounds */
+    soundCooldowns = {
+        dead: false,
+        jump: false,
+        hurt: false,
+        run: false
+    };
+
+    /** Aktuell laufender Run Sound */
+    currentRunSound = null;
+
     /** Kollisionsoffset */
     offset = {
         top: 110,
@@ -65,24 +76,108 @@ class Character extends MoveableObject {
      */
     animate = () => {
         if (this.isDead()) {
-            this.playAnimation(ImageHub.mainCharacter.dead);
+            this.handleDeadAnimation();
         } else if (this.isHurtAnimation()) {
-            this.playAnimation(ImageHub.mainCharacter.hurt);
-            this.updateActivity();
+            this.handleHurtAnimation();
         } else if (this.isAboveGround()) {
-            this.playAnimation(ImageHub.mainCharacter.jump);
-            this.updateActivity();
+            this.handleJumpAnimation();
         } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-            this.playAnimation(ImageHub.mainCharacter.walk);
-            this.updateActivity();
+            this.handleWalkAnimation();
         } else {
-            if (this.isLongIdle()) {
-                this.playAnimation(ImageHub.mainCharacter.long_idle);
-            } else {
-                this.playAnimation(ImageHub.mainCharacter.idle);
-            }
+            this.handleIdleAnimation();
         }
     };
+
+    /**
+     * Behandelt die Tod-Animation und den zugehörigen Sound
+     */
+    handleDeadAnimation() {
+        this.playAnimation(ImageHub.mainCharacter.dead);
+        if (!this.soundCooldowns.dead && this.world) {
+            this.world.playSound(AudioHub.character.dead[0]);
+            this.soundCooldowns.dead = true;
+        }
+    }
+
+    /**
+     * Behandelt die Verletzungs-Animation und den zugehörigen Sound
+     */
+    handleHurtAnimation() {
+        this.playAnimation(ImageHub.mainCharacter.hurt);
+        
+        // Run Sound stoppen bei Verletzung
+        if (this.currentRunSound) {
+            this.currentRunSound.pause();
+            this.currentRunSound.currentTime = 0;
+            this.currentRunSound = null;
+        }
+        
+        if (!this.soundCooldowns.hurt && this.world) {
+            this.world.playSound(AudioHub.character.damage[0]);
+            this.soundCooldowns.hurt = true;
+            setTimeout(() => {
+                this.soundCooldowns.hurt = false;
+            }, 1000);
+        }
+        this.updateActivity();
+    }
+
+    /**
+     * Behandelt die Sprung-Animation und den zugehörigen Sound
+     */
+    handleJumpAnimation() {
+        this.playAnimation(ImageHub.mainCharacter.jump);
+        
+        // Run Sound stoppen beim Springen
+        if (this.currentRunSound) {
+            this.currentRunSound.pause();
+            this.currentRunSound.currentTime = 0;
+            this.currentRunSound = null;
+        }
+        
+        if (!this.soundCooldowns.jump && this.world) {
+            this.world.playSound(AudioHub.character.jump[0]);
+            this.soundCooldowns.jump = true;
+            setTimeout(() => {
+                this.soundCooldowns.jump = false;
+            }, 500);
+        }
+        this.updateActivity();
+    }
+
+    /**
+     * Behandelt die Lauf-Animation und den zugehörigen Sound
+     */
+    handleWalkAnimation() {
+        this.playAnimation(ImageHub.mainCharacter.walk);
+        
+        // Run Sound nur starten, wenn er noch nicht läuft
+        if (!this.currentRunSound && this.world) {
+            this.currentRunSound = AudioHub.createAudio(AudioHub.character.run[0]);
+            this.currentRunSound.loop = true; // Loop, solange gelaufen wird
+            this.currentRunSound.play();
+        }
+        
+        this.updateActivity();
+    }
+
+    /**
+     * Behandelt die Idle-Animationen (normal und lang)
+     */
+    handleIdleAnimation() {
+        // Run Sound stoppen, wenn Character nicht mehr läuft
+        if (this.currentRunSound) {
+            this.currentRunSound.pause();
+            this.currentRunSound.currentTime = 0;
+            this.currentRunSound = null;
+        }
+        
+        if (this.isLongIdle()) {
+            this.playAnimation(ImageHub.mainCharacter.long_idle);
+        } else {
+            this.playAnimation(ImageHub.mainCharacter.idle);
+        }
+    }
 
     /**
      * Reagiert auf Tastendrücke (Bewegung nach links/rechts oder springen).

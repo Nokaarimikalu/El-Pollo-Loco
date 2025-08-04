@@ -124,7 +124,94 @@ canvas {
     font-size: 24px;
 }
 
-/* Startbildschirm */
+/* Audio Controls */
+.audio-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* Desktop Volume Slider */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.volume-slider {
+    width: 100px;
+    height: 5px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    outline: none;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ffc800;
+    cursor: pointer;
+    border: 2px solid #fff;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ffc800;
+    cursor: pointer;
+    border: 2px solid #fff;
+}
+
+.volume-label {
+    color: white;
+    font-size: 18px;
+}
+
+.audio-toggle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 3px solid #fff;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.audio-toggle:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.audio-toggle.muted {
+    background: rgba(150, 0, 0, 0.7);
+    border-color: #ff6666;
+}
+
+.desktop-only {
+    display: flex;
+}
+
+.mobile-only {
+    display: none;
+}
+
 .start-area {
     position: absolute;
     top: 50%;
@@ -176,18 +263,24 @@ canvas {
 .loosing-area .uLost,
 .winning-area .uWon {
     position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%);
+    width: 50%;
+}
+
+.winning-area .uWon {
+    position: absolute;
     top: 10%;
     left: 50%;
     transform: translate(-50%);
     width: 50%;
-    z-index: 10;
 }
 
 .background {
     height: 100%;
     width: 100%;
 }
-
 .restart-button,
 .end-button,
 .end-button-w {
@@ -320,6 +413,46 @@ canvas {
 
 @media(max-width: 800px) and (orientation: landscape) {
     .rotate-overlay {
+        display: none;
+    }
+    
+    /* Mobile Controls im Querformat anzeigen */
+    .mobile-controls.d_none {
+        display: flex !important;
+    }
+    
+    /* Audio Controls: Mobile Toggle anzeigen */
+    .desktop-only {
+        display: none;
+    }
+    
+    .mobile-only {
+        display: flex;
+    }
+}
+
+/* Audio Controls Media Queries */
+@media(max-width: 800px) {
+    .desktop-only {
+        display: none;
+    }
+    
+    .mobile-only {
+        display: flex;
+    }
+    
+    .audio-controls {
+        top: 15px;
+        right: 15px;
+    }
+}
+
+@media(min-width: 801px) {
+    .desktop-only {
+        display: flex;
+    }
+    
+    .mobile-only {
         display: none;
     }
 }
