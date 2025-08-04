@@ -22,6 +22,8 @@ function startGame() {
     world = new World(canvas, keyboard);
     document.querySelector(".start-area").classList.add("d_none");
     document.querySelector(".Keybinds").classList.add("d_none");
+    // Mobile Controls anzeigen
+    document.querySelector(".mobile-controls").classList.add("show");
 }
 
 function startAgain() {
@@ -29,6 +31,8 @@ function startAgain() {
     canvas = document.querySelector(`#canvas`);
     world = new World(canvas, keyboard);
     document.querySelector(".loosing-area").classList.add("d_none");
+    // Mobile Controls anzeigen
+    document.querySelector(".mobile-controls").classList.add("show");
 }
 
 function endGame() {
@@ -37,6 +41,8 @@ function endGame() {
     document.querySelector(".winning-area").classList.add("d_none");
     document.querySelector(".start-area").classList.remove("d_none");
     document.querySelector(".Keybinds").classList.remove("d_none");
+    // Mobile Controls verstecken
+    document.querySelector(".mobile-controls").classList.remove("show");
 }
 
 // #endregion
@@ -91,5 +97,93 @@ window.addEventListener("keyup", (event) => {
         world.sperre = true;
     }
 });
+
+// #endregion
+
+// #region Mobile Touch Controls
+
+/**
+ * Initialisiert die Touch-Controls für mobile Geräte
+ */
+function initMobileControls() {
+    const leftBtn = document.getElementById('leftBtn');
+    const rightBtn = document.getElementById('rightBtn');
+    const jumpBtn = document.getElementById('jumpBtn');
+    const throwBtn = document.getElementById('throwBtn');
+
+    // Links-Button
+    leftBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keyboard.LEFT = true;
+    });
+    leftBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keyboard.LEFT = false;
+    });
+
+    // Rechts-Button
+    rightBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keyboard.RIGHT = true;
+    });
+    rightBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keyboard.RIGHT = false;
+    });
+
+    // Sprung-Button
+    jumpBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keyboard.SPACEBAR = true;
+    });
+    jumpBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keyboard.SPACEBAR = false;
+    });
+
+    // Wurf-Button
+    throwBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keyboard.C = true;
+    });
+    throwBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keyboard.C = false;
+        if (world) {
+            world.sperre = true;
+        }
+    });
+
+    // Zusätzlich auch Mouse-Events für Desktop-Testing
+    [leftBtn, rightBtn, jumpBtn, throwBtn].forEach(btn => {
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const btnId = e.target.id;
+            switch(btnId) {
+                case 'leftBtn': keyboard.LEFT = true; break;
+                case 'rightBtn': keyboard.RIGHT = true; break;
+                case 'jumpBtn': keyboard.SPACEBAR = true; break;
+                case 'throwBtn': keyboard.C = true; break;
+            }
+        });
+        
+        btn.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            const btnId = e.target.id;
+            switch(btnId) {
+                case 'leftBtn': keyboard.LEFT = false; break;
+                case 'rightBtn': keyboard.RIGHT = false; break;
+                case 'jumpBtn': keyboard.SPACEBAR = false; break;
+                case 'throwBtn': 
+                    keyboard.C = false; 
+                    if (world) world.sperre = true;
+                    break;
+            }
+        });
+    });
+}
+
+// Touch-Controls nach DOM-Load initialisieren
+document.addEventListener('DOMContentLoaded', initMobileControls);
 
 // #endregion

@@ -9,6 +9,9 @@ class throwableSalsa extends MoveableObject {
     /** @type {boolean} Gibt an, ob das Objekt getroffen hat */
     gotHit = false;
 
+    /** @type {boolean} Gibt an, ob die Flasche nach links fliegt */
+    throwLeft = false;
+
     /** Offset-Werte zur Kollisionsanpassung */
     offset = {
         top: 10,
@@ -29,9 +32,11 @@ class throwableSalsa extends MoveableObject {
      * Erstellt ein neues Salsa-Wurfobjekt an Position x, y.
      * @param {number} x - Startposition X
      * @param {number} y - Startposition Y
+     * @param {boolean} throwLeft - Gibt an, ob nach links geworfen werden soll
      */
-    constructor(x, y) {
+    constructor(x, y, throwLeft = false) {
         super();
+        this.throwLeft = throwLeft;
         this.loadImage(ImageHub.salsa.spinning_salsa[0]);
         this.loadImages(ImageHub.salsa.spinning_salsa);
         this.loadImages(ImageHub.salsa.salsa_splash);
@@ -56,10 +61,14 @@ class throwableSalsa extends MoveableObject {
     }
 
     /**
-     * Bewegt die Flasche nach rechts.
+     * Bewegt die Flasche in die entsprechende Richtung.
      */
     flyingbottle = () => {
-        this.x += 10;
+        if (this.throwLeft) {
+            this.x -= 10; // Nach links
+        } else {
+            this.x += 10; // Nach rechts
+        }
     };
 
     /**

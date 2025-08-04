@@ -161,7 +161,7 @@ class World {
     }
 
     generateNewThrowableSalsa() {
-        let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120);
+        let bottle = new throwableSalsa(this.character.x + 80, this.character.y + 120, this.character.otherDirection);
         this.throwableObjects.push(bottle);
         this.salsa_bar.setPercentage(this.salsa_bar.percentage - 20);
         setTimeout(() => {

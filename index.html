@@ -31,7 +31,26 @@
         <script src="scripts/script.js"></script>
     </head>
     <body>
+        <!-- Rotate Overlay für Mobile -->
+        <div class="rotate-overlay d_none">
+            <div class="rotate-icon">📱</div>
+            <div class="rotate-text">Bitte drehe dein Gerät</div>
+            <div>Für das beste Spielerlebnis spiele im Querformat</div>
+        </div>
+        
         <main>
+            <!-- Mobile Controls -->
+            <div class="mobile-controls ">
+                <div class="controls-left">
+                    <button class="control-btn control-left" id="leftBtn"><</button>
+                    <button class="control-btn control-right" id="rightBtn">></button>
+                </div>
+                <div class="controls-right">
+                    <button class="control-btn control-jump" id="jumpBtn">Jump</button>
+                    <button class="control-btn control-throw" id="throwBtn">atk</button>
+                </div>
+            </div>
+
             <div class="canvas-wrapper">
                 <canvas id="canvas" width="720" height="480"></canvas>
             </div>
