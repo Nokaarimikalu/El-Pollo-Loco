@@ -107,7 +107,7 @@ class Endboss extends MoveableObject {
     handleDeadAnimation() {
         this.playAnimation(ImageHub.chicken_boss.dead);
         if (!this.soundCooldowns.dead) {
-            this.playEndbossSound(AudioHub.endboss.dead[0]);
+            this.playEndbossSound('dead');
             this.soundCooldowns.dead = true;
         }
     }
@@ -122,7 +122,7 @@ class Endboss extends MoveableObject {
             
             // Hurt Sound
             if (!this.soundCooldowns.hurt) {
-                this.playEndbossSound(AudioHub.endboss.hurt[0]);
+                this.playEndbossSound('hurt');
                 this.soundCooldowns.hurt = true;
                 setTimeout(() => {
                     this.soundCooldowns.hurt = false;
@@ -162,14 +162,11 @@ class Endboss extends MoveableObject {
     // #region Sound Management
 
     /**
-     * Spielt Endboss Sounds ab (verwendet das World Sound System)
-     * @param {string} soundPath - Pfad zur Sound-Datei
+     * Spielt Endboss Sounds ab über den zentralen AudioHub
+     * @param {string} soundType - Typ des Sounds (dead, hurt, attack, approachEndboss)
      */
-    playEndbossSound(soundPath) {
-        // Sound über das globale World-System abspielen
-        if (world && world.playSound) {
-            world.playSound(soundPath);
-        }
+    playEndbossSound(soundType) {
+        AudioHub.playEndbossSound(soundType);
     }
 
     // #endregion
@@ -186,7 +183,7 @@ class Endboss extends MoveableObject {
 
             // Attack Sound
             if (!this.soundCooldowns.attack) {
-                this.playEndbossSound(AudioHub.endboss.attack[0]);
+                this.playEndbossSound('attack');
                 this.soundCooldowns.attack = true;
                 setTimeout(() => {
                     this.soundCooldowns.attack = false;
@@ -202,8 +199,6 @@ class Endboss extends MoveableObject {
             }, 500);
         }
     }
-
     // #endregion
 }
-
 // #endregion

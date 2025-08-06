@@ -12,6 +12,9 @@ class throwableSalsa extends MoveableObject {
     /** @type {boolean} Gibt an, ob die Flasche nach links fliegt */
     throwLeft = false;
 
+    /** @type {boolean} Gibt an, ob die Flasche verschwinden soll */
+    shouldDisappear = false;
+
     /** Offset-Werte zur Kollisionsanpassung */
     offset = {
         top: 10,
@@ -64,10 +67,12 @@ class throwableSalsa extends MoveableObject {
      * Bewegt die Flasche in die entsprechende Richtung.
      */
     flyingbottle = () => {
-        if (this.throwLeft) {
-            this.x -= 10; // Nach links
-        } else {
-            this.x += 10; // Nach rechts
+        if (!this.gotHit) {
+            if (this.throwLeft) {
+                this.x -= 10; // Nach links
+            } else {
+                this.x += 10; // Nach rechts
+            }
         }
     };
 
@@ -75,7 +80,7 @@ class throwableSalsa extends MoveableObject {
      * Simuliert Schwerkraft für die Flasche.
      */
     applyGravitySalsa = () => {
-        if (this.isAboveGround() || this.y > 0) {
+        if (!this.gotHit && (this.isAboveGround() || this.y > 0)) {
             this.y -= this.speedY;
             this.speedY -= this.acceleration;
         }
@@ -85,12 +90,25 @@ class throwableSalsa extends MoveableObject {
      * Zeigt die passende Animation (spinning oder splash).
      */
     showImage = () => {
-        Intervalhub.startInterval(() => this.playAnimation(ImageHub.salsa.spinning_salsa), 1000 / 30);
-
         if (this.gotHit) {
-            Intervalhub.startInterval(() => this.playAnimation(ImageHub.salsa.salsa_splash), 1000 / 30);
+            this.playAnimation(ImageHub.salsa.salsa_splash);
+        } else {
+            this.playAnimation(ImageHub.salsa.spinning_salsa);
         }
     };
+
+    /**
+     * Wird aufgerufen, wenn die Flasche eine Kollision hat
+     */
+    hit() {
+        if (!this.gotHit) {
+            this.gotHit = true;
+            // Nach 100ms verschwinden lassen
+            setTimeout(() => {
+                this.shouldDisappear = true;
+            }, 100);
+        }
+    }
 
     // #endregion
 }

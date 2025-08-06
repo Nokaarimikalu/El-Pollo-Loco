@@ -23,7 +23,7 @@ class ConsumeableObject extends MoveableObject {
      * Nutzt standardmäßig das Coin-ImageSet.
      */
     animate() {
-        setInterval(() => {
+        Intervalhub.startInterval(() => {
             this.playAnimation(ImageHub.images_of_coins);
         }, 400);
     }

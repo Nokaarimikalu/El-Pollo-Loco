@@ -304,7 +304,7 @@ canvas {
 }
 
 .end-button-w {
-    left: 50%;
+    left: 70%;
     transform: translateX(-50%);
 }
 
@@ -418,7 +418,7 @@ canvas {
     
     /* Mobile Controls im Querformat anzeigen */
     .mobile-controls.d_none {
-        display: flex !important;
+        display: flex;
     }
     
     /* Audio Controls: Mobile Toggle anzeigen */

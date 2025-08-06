@@ -217,6 +217,7 @@ class Intervalhub {
  * Sammlung aller im Spiel verwendeten Audiodateien, unterteilt nach Typ.
  */
 class AudioHub {
+    //#region sound
     static character = {
         damage: ["sounds/character/characterDamage.mp3"],
         dead: ["sounds/character/characterDead.wav"],
@@ -237,9 +238,9 @@ class AudioHub {
 
     static endboss = {
         approachEndboss: ["sounds/endboss/endbossApproach.wav"],
-        attack: ["sounds/endboss/endbossApproach.wav"], // Verwende approach als attack sound
-        hurt: ["sounds/chicken/chickenDead.mp3"], // Verwende chicken sound für hurt
-        dead: ["sounds/chicken/chickenDead.mp3"], // Verwende chicken sound für dead
+        attack: ["sounds/endboss/endbossApproach.wav"], 
+        hurt: ["sounds/chicken/chickenDead.mp3"], 
+        dead: ["sounds/chicken/chickenDead.mp3"],
     };
 
     static gameStart = {
@@ -258,6 +259,55 @@ class AudioHub {
     static throwableSound = {
         bottleBreak: ["sounds/throwable/bottleBreak.mp3"],
     };
+    // #endregion
+
+    // #region Zentrale Audio-Management Methoden
+
+    /** @type {Audio} Aktuelle Hintergrundmusik */
+    static currentBackgroundMusic = null;
+
+    /** @type {Array<Audio>} Alle Audio-Objekte für Lautstärke-Kontrolle */
+    static allAudioObjects = [];
+
+    /** @type {number} Aktuelle Lautstärke (0-100) */
+    static currentVolume = 50;
+
+    /** @type {boolean} Ist Audio stumm geschaltet */
+    static isMuted = false;
+
+    /**
+     * Lädt Audio-Einstellungen aus dem LocalStorage
+     */
+    static loadAudioSettings() {
+        try {
+            const savedVolume = localStorage.getItem('elPolloLoco_volume');
+            const savedMuted = localStorage.getItem('elPolloLoco_muted');
+            
+            if (savedVolume !== null) {
+                this.currentVolume = parseInt(savedVolume);
+                if (this.currentVolume < 0 || this.currentVolume > 100) {
+                    this.currentVolume = 50;
+                }
+            }
+            if (savedMuted !== null) {
+                this.isMuted = savedMuted === 'true';
+            }
+        } catch (error) {
+            // console.log('Audio settings could not be loaded from localStorage:', error);
+        }
+    }
+
+    /**
+     * Speichert Audio-Einstellungen im LocalStorage
+     */
+    static saveAudioSettings() {
+        try {
+            localStorage.setItem('elPolloLoco_volume', this.currentVolume.toString());
+            localStorage.setItem('elPolloLoco_muted', this.isMuted.toString());
+        } catch (error) {
+            // console.log('Audio settings could not be saved to localStorage:', error);
+        }
+    }
 
     /**
      * Erstellt ein Audio-Objekt für den gegebenen Pfad
@@ -280,6 +330,173 @@ class AudioHub {
         audio.volume = 0.5; // Standard-Lautstärke
         return audio;
     }
-}
 
+    /**
+     * Startet die Hintergrundmusik
+     */
+    static startBackgroundMusic() {
+        if (!this.currentBackgroundMusic) {
+            this.currentBackgroundMusic = this.createBackgroundMusic(this.backgroundMusic.main[0]);
+            this.allAudioObjects.push(this.currentBackgroundMusic);
+        }
+        this.currentBackgroundMusic.volume = this.isMuted ? 0 : (this.currentVolume / 100) * 0.5;
+        this.currentBackgroundMusic.currentTime = 0;
+        // um errormeldungen zu beheben
+        this.currentBackgroundMusic.play().catch(error => {
+            // console.log("Hintergrundmusik konnte nicht gestartet werden:", error);
+        });
+    }
+
+    /**
+     * Stoppt die Hintergrundmusik
+     */
+    static stopBackgroundMusic() {
+        if (this.currentBackgroundMusic) {
+            this.currentBackgroundMusic.pause();
+            this.currentBackgroundMusic.currentTime = 0;
+        }
+    }
+
+    /**
+     * Spielt einen Sound-Effekt ab
+     * @param {string} audioPath - Pfad zur Audio-Datei
+     */
+    static playSound(audioPath) {
+        if (audioPath) {
+            const audio = this.createAudio(audioPath);
+            audio.volume = this.isMuted ? 0 : (this.currentVolume / 100);
+            this.allAudioObjects.push(audio);
+            audio.play().catch(error => {
+                // Fehler ignorieren, wenn Audio unterbrochen wird
+                if (error.name !== 'AbortError') {
+                    // console.log("Sound could not be played:", error);
+                }
+            });
+        }
+    }
+
+    /**
+     * Setzt die Lautstärke aller Spiel-Sounds
+     * @param {number} volume - Lautstärke zwischen 0 und 100
+     */
+    static setVolume(volume) {
+        this.currentVolume = volume;
+        
+        // Einstellungen speichern
+        this.saveAudioSettings();
+        
+        if (this.currentBackgroundMusic) {
+            this.currentBackgroundMusic.volume = this.isMuted ? 0 : (volume / 100) * 0.5;
+        }
+        this.allAudioObjects.forEach(audio => {
+            if (audio !== this.currentBackgroundMusic) {
+                audio.volume = this.isMuted ? 0 : (volume / 100);
+            }
+        });
+    }
+
+    /**
+     * Schaltet Audio stumm/laut
+     * @param {boolean} muted - Soll Audio stumm sein
+     */
+    static setMuted(muted) {
+        this.isMuted = muted;
+        
+        // Einstellungen speichern
+        this.saveAudioSettings();
+        
+        this.setVolume(this.currentVolume); // Volume neu anwenden
+    }
+
+    /**
+     * Stoppt alle laufenden Sounds
+     */
+    static stopAllSounds() {
+        this.stopBackgroundMusic();
+        
+        this.allAudioObjects.forEach(audio => {
+            if (audio && !audio.paused) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        });
+    }
+
+    // #region Convenience-Methoden für spezifische Sounds
+
+    /**
+     * Character Sound abspielen
+     * @param {string} soundType - Typ des Sounds (dead, damage, jump, run, snoring)
+     */
+    static playCharacterSound(soundType) {
+        if (this.character[soundType]) {
+            this.playSound(this.character[soundType][0]);
+        }
+    }
+
+    /**
+     * Chicken Sound abspielen
+     * @param {string} soundType - Typ des Sounds (dead, dead_small)
+     */
+    static playChickenSound(soundType) {
+        if (this.chicken[soundType]) {
+            this.playSound(this.chicken[soundType][0]);
+        }
+    }
+
+    /**
+     * Collectible Sound abspielen
+     * @param {string} soundType - Typ des Sounds (bottle, coin)
+     */
+    static playCollectibleSound(soundType) {
+        if (this.collectibles[soundType]) {
+            this.playSound(this.collectibles[soundType][0]);
+        }
+    }
+
+    /**
+     * Endboss Sound abspielen
+     * @param {string} soundType - Typ des Sounds (approachEndboss, attack, hurt, dead)
+     */
+    static playEndbossSound(soundType) {
+        if (this.endboss[soundType]) {
+            this.playSound(this.endboss[soundType][0]);
+        }
+    }
+
+    /**
+     * Game End Sound abspielen
+     * @param {string} soundType - Typ des Sounds (victory, gameOver)
+     */
+    static playGameEndSound(soundType) {
+        if (this.gameEnd[soundType]) {
+            this.playSound(this.gameEnd[soundType][0]);
+        }
+    }
+
+    /**
+     * Throwable Sound abspielen
+     * @param {string} soundType - Typ des Sounds (bottleBreak)
+     */
+    static playThrowableSound(soundType) {
+        if (this.throwableSound[soundType]) {
+            this.playSound(this.throwableSound[soundType][0]);
+        }
+    }
+
+    /**
+     * Erstellt einen speziellen Character Run Sound (mit Loop)
+     * @returns {Audio} Audio-Objekt für Character Run Sound
+     */
+    static createCharacterRunSound() {
+        const audio = this.createAudio(this.character.run[0]);
+        audio.loop = true;
+        audio.volume = this.isMuted ? 0 : (this.currentVolume / 100);
+        this.allAudioObjects.push(audio);
+        return audio;
+    }
+
+    // #endregion
+    // #endregion
+}
 // #endregion

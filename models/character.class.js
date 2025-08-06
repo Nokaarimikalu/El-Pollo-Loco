@@ -20,7 +20,7 @@ class Character extends MoveableObject {
     width = 150;
 
     /** Bewegungsgeschwindigkeit */
-    speed = 3.5;
+    speed = 4.5;
 
     /** Letzter Zeitpunkt der Inaktivität */
     idleTime = new Date().getTime();
@@ -95,8 +95,23 @@ class Character extends MoveableObject {
     handleDeadAnimation() {
         this.playAnimation(ImageHub.mainCharacter.dead);
         if (!this.soundCooldowns.dead && this.world) {
-            this.world.playSound(AudioHub.character.dead[0]);
+            AudioHub.playCharacterSound('dead');
             this.soundCooldowns.dead = true;
+        }
+    }
+
+    /**
+     * Stoppt den aktuellen Run Sound sicher
+     */
+    stopRunSound() {
+        if (this.currentRunSound) {
+            try {
+                this.currentRunSound.pause();
+                this.currentRunSound.currentTime = 0;
+            } catch (error) {
+                // Fehler beim Stoppen ignorieren
+            }
+            this.currentRunSound = null;
         }
     }
 
@@ -105,18 +120,10 @@ class Character extends MoveableObject {
      */
     handleHurtAnimation() {
         this.playAnimation(ImageHub.mainCharacter.hurt);
-        
-        // Run Sound stoppen bei Verletzung
-        if (this.currentRunSound) {
-            this.currentRunSound.pause();
-            this.currentRunSound.currentTime = 0;
-            this.currentRunSound = null;
-        }
-        
+        this.stopRunSound();     
         this.soundCooldowns.snoring = false;
-        
         if (!this.soundCooldowns.hurt && this.world) {
-            this.world.playSound(AudioHub.character.damage[0]);
+            AudioHub.playCharacterSound('damage');
             this.soundCooldowns.hurt = true;
             setTimeout(() => {
                 this.soundCooldowns.hurt = false;
@@ -130,13 +137,7 @@ class Character extends MoveableObject {
      */
     handleJumpAnimation() {
         this.playAnimation(ImageHub.mainCharacter.jump);
-        
-        // Run Sound stoppen beim Springen
-        if (this.currentRunSound) {
-            this.currentRunSound.pause();
-            this.currentRunSound.currentTime = 0;
-            this.currentRunSound = null;
-        }       
+        this.stopRunSound();       
         this.soundCooldowns.snoring = false;      
         this.updateActivity();
     }
@@ -151,9 +152,12 @@ class Character extends MoveableObject {
         
         // Run Sound nur starten, wenn er noch nicht läuft
         if (!this.currentRunSound && this.world) {
-            this.currentRunSound = AudioHub.createAudio(AudioHub.character.run[0]);
-            this.currentRunSound.loop = true; // Loop, solange gelaufen wird
-            this.currentRunSound.play();
+            this.currentRunSound = AudioHub.createCharacterRunSound();
+            this.currentRunSound.play().catch(error => {
+                if (error.name !== 'AbortError') {
+                    // console.log("Run sound could not be played:", error);
+                }
+            });
         }
         
         this.updateActivity();
@@ -163,16 +167,11 @@ class Character extends MoveableObject {
      * Behandelt die Idle-Animationen (normal und lang)
      */
     handleIdleAnimation() {
-        // Run Sound stoppen, wenn Character nicht mehr läuft
-        if (this.currentRunSound) {
-            this.currentRunSound.pause();
-            this.currentRunSound.currentTime = 0;
-            this.currentRunSound = null;
-        }
+        this.stopRunSound();  
         if (this.isLongIdle()) {
             this.playAnimation(ImageHub.mainCharacter.long_idle);
             if (!this.soundCooldowns.snoring && this.world) {
-                this.world.playSound(AudioHub.character.snoring[0]);
+                AudioHub.playCharacterSound('snoring');
                 this.soundCooldowns.snoring = true;
                 setTimeout(() => {
                     this.soundCooldowns.snoring = false;
@@ -221,20 +220,15 @@ class Character extends MoveableObject {
      * Überschreibt die jump() Methode um Jump Sound hinzuzufügen
      */
     jump = () => {
-        // Jump Sound nur abspielen, wenn Character gerade abspringt
         if (!this.soundCooldowns.jump && this.world) {
-            this.world.playSound(AudioHub.character.jump[0]);
+            AudioHub.playCharacterSound('jump');
             this.soundCooldowns.jump = true;
             setTimeout(() => {
                 this.soundCooldowns.jump = false;
             }, 1000); // Längerer Cooldown, damit Sound nicht mehrfach kommt
         }
-        
-        // Eltern-jump() Methode aufrufen für die eigentliche Sprung-Mechanik
         this.speedY = 30;
     }
-
     // #endregion
 }
-
 // #endregion

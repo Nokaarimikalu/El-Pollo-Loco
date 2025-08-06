@@ -58,9 +58,7 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        Intervalhub.startInterval(this.checkCollision, 1000 / 60);
-        Intervalhub.startInterval(this.checkCollisionSalsa, 1000 / 60);
-        Intervalhub.startInterval(this.checkCollisionCoin, 1000 / 60);
+        Intervalhub.startInterval(this.checkAllCollisions, 1000 / 60);
     }
 
     // #region Setup & Rendering
@@ -75,6 +73,7 @@ class World {
         this.drawHUD();
         requestAnimationFrame(() => this.draw());
     }
+    
 
     /** Verknüpft Objekte innerhalb der Welt */
     setWorld() {
@@ -83,34 +82,18 @@ class World {
     }
 
     /**
-     * Spielt einen Sound ab und fügt ihn zur Audio-Kontrolle hinzu
+     * Spielt einen Sound ab über den zentralen AudioHub
      * @param {string} audioPath - Pfad zur Audio-Datei
      */
     playSound(audioPath) {
-        if (audioPath) {
-            const audio = AudioHub.createAudio(audioPath);
-            
-            // Aktuelle Lautstärke anwenden (aus game.js)
-            if (typeof currentVolume !== 'undefined' && typeof isMuted !== 'undefined') {
-                audio.volume = isMuted ? 0 : (currentVolume / 100);
-            }
-            
-            // Audio zur Kontrolle hinzufügen (aus game.js)
-            if (typeof allAudioObjects !== 'undefined') {
-                allAudioObjects.push(audio);
-            }
-            
-            audio.play().catch(error => {
-                
-            });
-        }
+        AudioHub.playSound(audioPath);
     }
 
     chickenSound(enemy){
         if (enemy instanceof SmallChicken) {
-            this.playSound(AudioHub.chicken.dead_small[0]);
+            AudioHub.playChickenSound('dead_small');
         } else {
-            this.playSound(AudioHub.chicken.dead[0]);
+            AudioHub.playChickenSound('dead');
         }
     }
 
@@ -118,18 +101,45 @@ class World {
 
     // #region Collision
 
-    checkCollision = () => {
+    /**
+     * Zentraler Kollisions-Check für optimierte Performance
+     */
+    checkAllCollisions = () => {
+        this.checkCharacterCollisions();
+        this.checkThrowableCollisions(); 
+        this.checkCollectibleCollisions();
+    };
+
+    /**
+     * Überprüft alle Kollisionen mit dem Character
+     */
+    checkCharacterCollisions() {
         this.jumpCollision();
         this.enemyToCharacterCollision();
         this.checkThrowableObjects();
-        this.checkThrowableCollision();
+        this.removeDisappearedBottles();
         this.walkingEndboss();
         setTimeout(() => {
             this.character.protection = false;
         }, 200);
         this.gameOver();
         this.gameWon();
-    };
+    }
+
+    /**
+     * Überprüft Kollisionen der geworfenen Objekte
+     */
+    checkThrowableCollisions() {
+        this.checkThrowableCollision();
+    }
+
+    /**
+     * Überprüft Kollisionen mit sammelbaren Objekten
+     */
+    checkCollectibleCollisions() {
+        this.checkCollisionSalsa();
+        this.checkCollisionCoin();
+    }
 
     checkCollisionSalsa = () => {
         for (let i = this.level.salsa.length - 1; i >= 0; i--) {
@@ -137,7 +147,7 @@ class World {
             if (this.salsa_bar.percentage !== 100 && this.character.isColliding(s)) {
                 this.level.salsa.splice(i, 1);
                 this.salsa_bar.setPercentage(this.salsa_bar.percentage + 20);
-                this.playSound(AudioHub.collectibles.bottle[0]);
+                AudioHub.playCollectibleSound('bottle');
             }
         }
     };
@@ -148,7 +158,7 @@ class World {
             if (this.coin_bar.percentage !== 100 && this.character.isColliding(s)) {
                 this.level.coins.splice(i, 1);
                 this.coin_bar.setPercentage(this.coin_bar.percentage + 6.25);
-                this.playSound(AudioHub.collectibles.coin[0]);
+                AudioHub.playCollectibleSound('coin');
             }
         }
     };
@@ -164,7 +174,7 @@ class World {
                 this.character.protection = true;
                 this.level.enemies.splice(i, 1);
                 this.level.deadEnemies.push(chicken);
-                this.playSound(AudioHub.chicken.dead[0]);
+                AudioHub.playChickenSound('dead');
                 setTimeout(() => {
                     const index = this.level.deadEnemies.indexOf(chicken);
                     if (index !== -1) this.level.deadEnemies.splice(index, 1);
@@ -205,6 +215,13 @@ class World {
         }, 4000);
     }
 
+    /**
+     * Entfernt Flaschen, die verschwinden sollen
+     */
+    removeDisappearedBottles() {
+        this.throwableObjects = this.throwableObjects.filter(bottle => !bottle.shouldDisappear);
+    }
+
     checkThrowableCollision() {
         this.throwableObjects.forEach((salsa) => {
             for (let i = this.level.enemies.length - 1; i >= 0; i--) {
@@ -226,7 +243,7 @@ class World {
         if (this.character.x > 1800) {
             // Endboss aktivieren und Sound nur beim ersten Mal abspielen
             if (!this.check) {
-                this.playSound(AudioHub.endboss.approachEndboss[0]);
+                AudioHub.playEndbossSound('approachEndboss');
             }
             this.check = true;
             this.addToMap(this.boss_bar);
@@ -242,7 +259,7 @@ class World {
 
     killNormalEnemies(enemy, salsa, index) {
         enemy.isHit = true;
-        salsa.gotHit = true;
+        salsa.hit(); // Ruft die neue hit() Methode auf
         if (enemy.hp <= 0) {
             enemy.chickenIsDead = true;
             this.level.enemies.splice(index, 1);
@@ -312,7 +329,7 @@ class World {
             
             // Game Over Sound abspielen
             setTimeout(() => {
-                this.playSound(AudioHub.gameEnd.gameOver[0]);
+                AudioHub.playGameEndSound('gameOver');
             }, 100);
             
             Intervalhub.stopAllintervals();
@@ -327,7 +344,7 @@ class World {
             
             // Victory Sound abspielen
             setTimeout(() => {
-                this.playSound(AudioHub.gameEnd.victory[0]);
+                AudioHub.playGameEndSound('victory');
             }, 100);
             
             setTimeout(() => {
