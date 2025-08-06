@@ -82,7 +82,7 @@ class Character extends MoveableObject {
             this.handleHurtAnimation();
         } else if (this.isAboveGround()) {
             this.handleJumpAnimation();
-        } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+        } else if (this.world && this.world.keyboard && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
             this.handleWalkAnimation();
         } else {
             this.handleIdleAnimation();
@@ -189,18 +189,20 @@ class Character extends MoveableObject {
      * Aktualisiert die Kamera-Position.
      */
     leftAndRightAnimation = () => {
-        if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-            this.otherDirection = false;
-            this.moveRight();
+        if (this.world && this.world.keyboard) {
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+                this.otherDirection = false;
+                this.moveRight();
+            }
+            if (this.world.keyboard.LEFT && this.x > 0) {
+                this.otherDirection = true;
+                this.moveLeft();
+            }
+            if (this.world.keyboard.SPACEBAR && !this.isAboveGround()) {
+                this.jump();
+            }
+            this.world.camera_x = -this.x + 100;
         }
-        if (this.world.keyboard.LEFT && this.x > 0) {
-            this.otherDirection = true;
-            this.moveLeft();
-        }
-        if (this.world.keyboard.SPACEBAR && !this.isAboveGround()) {
-            this.jump();
-        }
-        this.world.camera_x = -this.x + 100;
     };
 
     /**
