@@ -36,7 +36,8 @@ class Character extends MoveableObject {
         dead: false,
         jump: false,
         hurt: false,
-        run: false
+        run: false,
+        snoring: false
     };
 
     /** Aktuell laufender Run Sound */
@@ -112,6 +113,8 @@ class Character extends MoveableObject {
             this.currentRunSound = null;
         }
         
+        this.soundCooldowns.snoring = false;
+        
         if (!this.soundCooldowns.hurt && this.world) {
             this.world.playSound(AudioHub.character.damage[0]);
             this.soundCooldowns.hurt = true;
@@ -133,15 +136,8 @@ class Character extends MoveableObject {
             this.currentRunSound.pause();
             this.currentRunSound.currentTime = 0;
             this.currentRunSound = null;
-        }
-        
-        if (!this.soundCooldowns.jump && this.world) {
-            this.world.playSound(AudioHub.character.jump[0]);
-            this.soundCooldowns.jump = true;
-            setTimeout(() => {
-                this.soundCooldowns.jump = false;
-            }, 500);
-        }
+        }       
+        this.soundCooldowns.snoring = false;      
         this.updateActivity();
     }
 
@@ -150,6 +146,8 @@ class Character extends MoveableObject {
      */
     handleWalkAnimation() {
         this.playAnimation(ImageHub.mainCharacter.walk);
+        
+        this.soundCooldowns.snoring = false;
         
         // Run Sound nur starten, wenn er noch nicht läuft
         if (!this.currentRunSound && this.world) {
@@ -171,11 +169,18 @@ class Character extends MoveableObject {
             this.currentRunSound.currentTime = 0;
             this.currentRunSound = null;
         }
-        
         if (this.isLongIdle()) {
             this.playAnimation(ImageHub.mainCharacter.long_idle);
+            if (!this.soundCooldowns.snoring && this.world) {
+                this.world.playSound(AudioHub.character.snoring[0]);
+                this.soundCooldowns.snoring = true;
+                setTimeout(() => {
+                    this.soundCooldowns.snoring = false;
+                }, 3000); 
+            }
         } else {
             this.playAnimation(ImageHub.mainCharacter.idle);
+            this.soundCooldowns.snoring = false;
         }
     }
 
@@ -208,6 +213,23 @@ class Character extends MoveableObject {
         this.loadImages(ImageHub.mainCharacter.dead);
         this.loadImages(ImageHub.mainCharacter.idle);
         this.loadImages(ImageHub.mainCharacter.long_idle);
+    }
+
+    /**
+     * Überschreibt die jump() Methode um Jump Sound hinzuzufügen
+     */
+    jump = () => {
+        // Jump Sound nur abspielen, wenn Character gerade abspringt
+        if (!this.soundCooldowns.jump && this.world) {
+            this.world.playSound(AudioHub.character.jump[0]);
+            this.soundCooldowns.jump = true;
+            setTimeout(() => {
+                this.soundCooldowns.jump = false;
+            }, 1000); // Längerer Cooldown, damit Sound nicht mehrfach kommt
+        }
+        
+        // Eltern-jump() Methode aufrufen für die eigentliche Sprung-Mechanik
+        this.speedY = 30;
     }
 
     // #endregion
