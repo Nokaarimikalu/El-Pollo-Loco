@@ -25,6 +25,7 @@ function startGame() {
     world = new World(canvas, keyboard);
     document.querySelector(".start-area").classList.add("d_none");
     document.querySelector(".Keybinds").classList.add("d_none");
+    document.querySelector(".impressum-button").classList.add("d_none");
     AudioHub.startBackgroundMusic();
 }
 
@@ -33,7 +34,8 @@ function startAgain() {
     canvas = document.querySelector(`#canvas`);
     world = new World(canvas, keyboard);
     document.querySelector(".loosing-area").classList.add("d_none");
-    document.querySelector(".winning-area").classList.add("d_none");    
+    document.querySelector(".winning-area").classList.add("d_none");   
+    document.querySelector(".impressum-button").classList.add("d_none");
     AudioHub.startBackgroundMusic();
 }
 
@@ -43,6 +45,7 @@ function endGame() {
     document.querySelector(".winning-area").classList.add("d_none");
     document.querySelector(".start-area").classList.remove("d_none");
     document.querySelector(".Keybinds").classList.remove("d_none");
+    document.querySelector(".impressum-button").classList.remove("d_none");
     AudioHub.stopAllSounds();
 }
 
@@ -278,5 +281,25 @@ function setupToggle() {
 // Global verfügbar machen für Kompatibilität
 window.stopAllSounds = () => AudioHub.stopAllSounds();
 
+// #endregion
 
+// #region Impressum
+
+/**
+ * Öffnet das Impressum Overlay
+ */
+function openImpressum() {
+    const overlay = document.getElementById('impressumOverlay');
+    overlay.classList.remove('d_none');
+    overlay.classList.add('d_flex');
+}
+
+/**
+ * Schließt das Impressum Overlay
+ */
+function closeImpressum() {
+    const overlay = document.getElementById('impressumOverlay');
+    overlay.classList.remove('d_flex');
+    overlay.classList.add('d_none');
+}
 // #endregion

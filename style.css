@@ -16,6 +16,7 @@ body {
     background-repeat: no-repeat;
     font-family: sans-serif;
     display: flex;
+    overflow: hidden;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -124,7 +125,6 @@ canvas {
     font-size: 24px;
 }
 
-/* Audio Controls */
 .audio-controls {
     position: fixed;
     top: 20px;
@@ -132,7 +132,6 @@ canvas {
     z-index: 1000;
 }
 
-/* Desktop Volume Slider */
 .volume-control {
     display: flex;
     align-items: center;
@@ -222,8 +221,6 @@ canvas {
     z-index: 20;
 }
 
-
-
 .start-area img {
     height: 100%;
     width: 100%;
@@ -257,8 +254,6 @@ canvas {
     height: 480px;
     z-index: 20;
 }
-
-
 
 .loosing-area .uLost,
 .winning-area .uWon {
@@ -327,6 +322,10 @@ canvas {
     display: none;
 }
 
+.d_flex {
+    display: flex;
+}
+
 /* Rotate Overlay für Mobile */
 .rotate-overlay {
     position: fixed;
@@ -365,12 +364,11 @@ canvas {
     }
 }
 
-
 @media(max-width: 768px) {
     .Keybinds {
         font-size: 14px;
         padding: 8px 16px;
-        bottom: 8vh;
+        bottom: 8dvh;
     }
 }
 
@@ -415,13 +413,10 @@ canvas {
     .rotate-overlay {
         display: none;
     }
-    
-    /* Mobile Controls im Querformat anzeigen */
     .mobile-controls.d_none {
         display: flex;
     }
-    
-    /* Audio Controls: Mobile Toggle anzeigen */
+
     .desktop-only {
         display: none;
     }
@@ -456,3 +451,95 @@ canvas {
         display: none;
     }
 }
+
+/* Impressum Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-button{
+    width: 20px;
+    background-color: transparent;
+    border: none;
+    font-size: 30px;
+}
+
+.overlay-content {
+    background-color: #fff;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* verhindert doppelten Scrollbalken */
+}
+
+.overlay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 2px solid #ffc800;
+    background-color: #f8f9fa;
+    border-radius: 15px 15px 0 0;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.overlay-body {
+    padding: 30px;
+    line-height: 1.6;
+    overflow-y: auto;
+    max-height: calc(80vh - 80px); /* 80px = ungefähr Headerhöhe */
+}
+
+.overlay-body p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* Impressum Button */
+.impressum-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #ffc800;
+    border: 2px solid #ffc800;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    z-index: 100;
+    transition: all 0.3s;
+}
+
+.impressum-button:hover {
+    padding: 15px 30px;
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
