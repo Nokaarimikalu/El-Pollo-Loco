@@ -275,6 +275,12 @@ class AudioHub {
     /** @type {boolean} Ist Audio stumm geschaltet */
     static isMuted = false;
 
+    /** @type {Map<string, Audio>} Cache für bereits geladene Audio-Objekte */
+    static audioCache = new Map();
+
+    /** @type {Audio} Spezielle Referenz für Character Run Sound */
+    static characterRunAudio = null;
+
     /**
      * Lädt Audio-Einstellungen aus dem LocalStorage
      */
@@ -310,12 +316,17 @@ class AudioHub {
     }
 
     /**
-     * Erstellt ein Audio-Objekt für den gegebenen Pfad
+     * Erstellt ein Audio-Objekt für den gegebenen Pfad (mit Cache)
      * @param {string} audioPath - Pfad zur Audio-Datei
      * @returns {Audio} Audio-Objekt
      */
     static createAudio(audioPath) {
+        if (this.audioCache.has(audioPath)) {
+            return this.audioCache.get(audioPath);
+        }
+
         const audio = new Audio(audioPath);
+        this.audioCache.set(audioPath, audio);
         return audio;
     }
 
@@ -341,7 +352,6 @@ class AudioHub {
         }
         this.currentBackgroundMusic.volume = this.isMuted ? 0 : (this.currentVolume / 100) * 0.5;
         this.currentBackgroundMusic.currentTime = 0;
-        // um errormeldungen zu beheben
         this.currentBackgroundMusic.play().catch(error => {
             // console.log("Hintergrundmusik konnte nicht gestartet werden:", error);
         });
@@ -358,21 +368,59 @@ class AudioHub {
     }
 
     /**
-     * Spielt einen Sound-Effekt ab
+     * Spielt einen Sound-Effekt ab (mit Cache)
      * @param {string} audioPath - Pfad zur Audio-Datei
      */
     static playSound(audioPath) {
         if (audioPath) {
             const audio = this.createAudio(audioPath);
             audio.volume = this.isMuted ? 0 : (this.currentVolume / 100);
-            this.allAudioObjects.push(audio);
+            
+            // Nur zu allAudioObjects hinzufügen wenn noch nicht drin
+            if (!this.allAudioObjects.includes(audio)) {
+                this.allAudioObjects.push(audio);
+            }
+            
+            // Audio von Anfang an abspielen
+            audio.currentTime = 0;
             audio.play().catch(error => {
-                // Fehler ignorieren, wenn Audio unterbrochen wird
                 if (error.name !== 'AbortError') {
                     // console.log("Sound could not be played:", error);
                 }
             });
         }
+    }
+
+    /**
+     * Startet Character Run Sound (Loop)
+     */
+    static startCharacterRunSound() {
+        const runAudio = this.createCharacterRunSound();
+        if (runAudio.paused) {
+            runAudio.play().catch(error => {
+                if (error.name !== 'AbortError') {
+                    // console.log("Run sound could not be played:", error);
+                }
+            });
+        }
+    }
+
+    /**
+     * Stoppt Character Run Sound
+     */
+    static stopCharacterRunSound() {
+        if (this.characterRunAudio && !this.characterRunAudio.paused) {
+            this.characterRunAudio.pause();
+            this.characterRunAudio.currentTime = 0;
+        }
+    }
+
+    /**
+     * Leert den Audio-Cache (bei Bedarf)
+     */
+    static clearAudioCache() {
+        this.audioCache.clear();
+        this.characterRunAudio = null;
     }
 
     /**
@@ -485,15 +533,19 @@ class AudioHub {
     }
 
     /**
-     * Erstellt einen speziellen Character Run Sound (mit Loop)
+     * Erstellt einen speziellen Character Run Sound (mit Cache und Loop)
      * @returns {Audio} Audio-Objekt für Character Run Sound
      */
     static createCharacterRunSound() {
-        const audio = this.createAudio(this.character.run[0]);
-        audio.loop = true;
-        audio.volume = this.isMuted ? 0 : (this.currentVolume / 100);
-        this.allAudioObjects.push(audio);
-        return audio;
+        if (!this.characterRunAudio) {
+            this.characterRunAudio = this.createAudio(this.character.run[0]);
+            this.characterRunAudio.loop = true;
+            this.allAudioObjects.push(this.characterRunAudio);
+        }
+        
+        // Volume aktualisieren
+        this.characterRunAudio.volume = this.isMuted ? 0 : (this.currentVolume / 100);
+        return this.characterRunAudio;
     }
 
     // #endregion
